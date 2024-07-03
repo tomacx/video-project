@@ -45,7 +45,7 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
+   # 'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -81,9 +81,9 @@ WSGI_APPLICATION = 'video.wsgi.application'
 DATABASES = {
     'default': {#配置自己的数据库
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'securityMonitoring',
+        'NAME': 'system',
         'USER':'root',
-        'PASSWORD':'yumu1412',
+        'PASSWORD':'123456',
     }
 }
 

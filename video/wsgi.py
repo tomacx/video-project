@@ -1,5 +1,4 @@
-"""
-WSGI config for video project.
+"""WSGI config for video project.
 
 It exposes the WSGI callable as a module-level variable named ``application``.
 
