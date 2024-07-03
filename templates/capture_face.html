@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>标题</title>
+</head>
+<body>
+    <h1>录入面部</h1>
+    <p name="username">用户名： {{ username }}</p>
+    <p name="string_key">视频流： {{ key }}</p>
+
+    <img id="capture_face" src="{% url 'capture_face' %}?username={{ username }}&string_key={{ key }}" alt="capture face">
+    
+    <form method="post" action="{% url 'index' %}">
+        {% csrf_token %}
+        <input type="submit" value="返回">
+        
+    </form>
+</body>
+</html>

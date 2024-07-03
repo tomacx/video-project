@@ -15,6 +15,7 @@ def take_md5(content):
     result = hash.hexdigest()  #得到加密结果
     return result
 
+
 def login(request):
     if request.method == 'POST':
         form = UserLogin(request.POST)
@@ -24,12 +25,14 @@ def login(request):
             password = take_md5(password)
             namefilter = User.objects.filter(username=username,password=password)
             if len(namefilter) > 0:
-                return render('success.html',{'username':username,'operation':'登录'})
+                return render('choose.html',{'username':username,'operation':'登录'})
             else:
                 return render('login.html', {'error': '该用户名不存在！'})
         else:
             form = UserLogin()
             return render(request,'login.html', {'form':form})
+    else:
+        return render(request, 'login.html')
 
 
 def register(request):
@@ -55,7 +58,7 @@ def register(request):
                     user = User.objects.create(username=username, password=password, email=email,
                                                    phone=phone,type=type)
                     user.save()
-                    return render('success.html',{'username':username,'operation':'注册'})
+                    return render('choose.html',{'username':username,'operation':'注册'})
     else:
         form = UserRegister()
         return render(request,'register.html',{'form',form})

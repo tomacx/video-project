@@ -37,7 +37,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'userLogin'
+    'userLogin',
+    'modify',
+    'faceRecog',
     #这里添加应用
 ]
 
@@ -81,9 +83,9 @@ WSGI_APPLICATION = 'video.wsgi.application'
 DATABASES = {
     'default': {#配置自己的数据库
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'system',
+        'NAME': 'securitymonitoring',
         'USER':'root',
-        'PASSWORD':'123456',
+        'PASSWORD':'yumu1412',
     }
 }
 

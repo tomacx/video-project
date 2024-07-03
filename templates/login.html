@@ -5,7 +5,6 @@
         <title>注册</title>
     </head>
     <body>
-    <form method="post" action="">
         <form method="post" action="">
             {% csrf_token %}  {# 防止csrf（跨站请求伪造） #}
             <label>账号：</label>
@@ -16,7 +15,15 @@
             <button type="submit" name="login">登录</button>
         </form>
 
+        <form method="post" action="">
+            {% csrf_token %}  {# 防止csrf（跨站请求伪造） #}
+            <label>账号：</label>
+            <input name="username">
+            <div></div>
+            <label>密码：</label>
+            <input name="password">
             <button type="submit" name="register">注册</button>
         </form>
+
     </body>
 </html>
