@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<h1>用户信息</h1>
+<a href="/add">添加用户</a>
+<form method="post">
+    <input type="text" name="username" placeholder="用户名">
+    <input type="submit" value="筛选">
+</form>
+<table width=300 height=1>
+    <thead>
+    <tr>
+        <th>name</th>
+        <th>password</th>
+        <th>email</th>
+        <th>phone</th>
+        <th>type</th>
+    </tr>
+    </thead>
+    <thead>
+    {% for user in user_list %}
+        <tr>
+            <td>{{ user.username}}</td>
+            <td>{{ user.password}}</td>
+            <td>{{ user.email}}</td>
+            <td>{{ user.phone}}</td>
+            <td>{{ user.type}}</td>
+            <td>
+                <a href="/delete?username={{user.username}}">删除</a>
+                <a href="/edit?username={{user.username}}">编辑</a>
+            </td>
+        </tr>
+    {% endfor %}    
+    </thead>
+</table>
+</body>
+</html>

@@ -21,5 +21,6 @@ from userLogin import views
 
 urlpatterns = [
     path('', include('userLogin.urls')),
+    path('', include('modify.urls')),
 ]
 
