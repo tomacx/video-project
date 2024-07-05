@@ -6,5 +6,6 @@ urlpatterns = [
     path('add',views.add),
     path('delete',views.delete),
     path('edit',views.edit),
-    path('userinfo',views.userinfo)
+    path('userinfo',views.userinfo),
+    path('index',views.index)
 ]

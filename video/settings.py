@@ -37,8 +37,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'captcha',
     'userLogin',
-    'modify'
+    'modify',
+    'corsheaders',
+    'regional',
+    'testHTML'
     #这里添加应用
 ]
 
@@ -47,10 +51,28 @@ MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
    # 'django.middleware.csrf.CsrfViewMiddleware',
+
+    'django.middleware.common.CommonMiddleware',  # 新增
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+CORS_ALLOW_ALL_ORIGINS = True
+# 增加跨域忽略
+CORS_ALLOW_CREDENTIALS = True
+CORS_ORIGIN_ALLOW_ALL = True
+# 允许所有方法
+CORS_ALLOW_METHODS = ('*')
+# 允许所有请求头
+CORS_ALLOW_HEADERS = ('*')
+
+CORS_ALLOWED_ORIGINS = [
+    'http://localhost:9528',  # Vue.js前端应用的地址
+    'http://example.com',     # 其他允许的域名
+]
+
+
 
 ROOT_URLCONF = 'video.urls'
 
@@ -125,9 +147,9 @@ USE_TZ = False
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
 STATICFILES_DIRS = (                    # static的配置 将css,js和img存储在static文件夹下
-    os.path.join(BASE_DIR, 'static'),
+    os.path.join(BASE_DIR, 'static/'),
 )
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field

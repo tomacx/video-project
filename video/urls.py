@@ -18,9 +18,14 @@ from django.contrib import admin
 from django.urls import path
 from django.urls import include
 from userLogin import views
+from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 
 urlpatterns = [
     path('', include('userLogin.urls')),
     path('', include('modify.urls')),
+    path('',include('regional.urls')),
+    path('captcha',include('captcha.urls')),
+    path('',include('testHTML.urls'))
 ]
 
+urlpatterns += staticfiles_urlpatterns()
