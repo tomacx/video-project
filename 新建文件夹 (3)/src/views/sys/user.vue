@@ -4,7 +4,7 @@
       <el-card id="search">
         <el-input v-model="searchModel.username" placeholder="姓名"></el-input>
         <el-input v-model="searchModel.phone" placeholder="电话"></el-input>
-        <el-button type="primary" round>查询</el-button>
+        <el-button @click="getUserList" type="primary" round>查询</el-button>
         <el-button @click="openEditUI" type="primary" icon="el-icon-plus" circle></el-button>
       </el-card>
       <!--结果栏-->
@@ -55,7 +55,18 @@
     <el-form-item label="姓名" :label-width="formLabelWidth">
       <el-input v-model="userForm.name" autocomplete="off"></el-input>
     </el-form-item>
-    
+    <el-form-item label="密码" :label-width="formLabelWidth">
+      <el-input v-model="userForm.password" autocomplete="off"></el-input>
+    </el-form-item>
+    <el-form-item label="email" :label-width="formLabelWidth">
+      <el-input v-model="userForm.email" autocomplete="off"></el-input>
+    </el-form-item>
+    <el-form-item label="电话" :label-width="formLabelWidth">
+      <el-input v-model="userForm.phone" autocomplete="off"></el-input>
+    </el-form-item>
+    <el-form-item label="人员类别" :label-width="formLabelWidth">
+      <el-input v-model="userForm.type" autocomplete="off"></el-input>
+    </el-form-item>
   </el-form>
   <div slot="footer" class="dialog-footer">
     <el-button @click="dialogFormVisible = false">取 消</el-button>
@@ -66,6 +77,7 @@
   </template>
    <!--定义的查询对象-->
   <script>
+  import userApi from '@/api/usermanage'
   export default {
     data(){
      return {
@@ -83,9 +95,9 @@
       
     },
     methods:{
-      openEditUI:{
-        //  this.title='新增人员';
-        //  this.dialogFormVisible=true;
+      openEditUI(){
+          this.title='新增人员';
+          this.dialogFormVisible=true;
       
       },
       handleSizeChange:{
@@ -93,9 +105,21 @@
       },
       handleCurrentChange:{
         
+      },
+      // 
+      getUserList(){
+        userApi.getUserList(this.searchModel).then(response =>{
+          //赋值
+          this.userList = response.data.rows;
+          this.total=response.data.total;
+        });
       }
+    },
+    created(){
+      //钩子函数
+      this.getUserList();
     }
-  }
+  };
   </script>
   
   <style>

@@ -95,6 +95,23 @@ export default {
     }
   },
   methods: {
+      saveUser(){// 触发表单验证
+        this.$refs.userFormRef.validate((valid)=>{
+          if(valid){// 提交请求给后台
+        userApi.addUser(this.userForm).then(response =>{
+          // 成功提示
+        this.$message({
+        message:response.message,type:"success"
+        });
+        //关闭对话框
+        this.dialogFormVisible = false;// 刷新表格
+        this.getuserList();
+        });
+        }
+        else {console.log("error submit!!");
+        return false;}});
+      },
+  
     showPwd() {
       if (this.passwordType === 'password') {
         this.passwordType = ''
@@ -110,7 +127,7 @@ export default {
         if (valid) {
           this.loading = true
           this.$store.dispatch('user/login', this.loginForm).then(() => {
-            this.$router.push({ path: this.redirect || '/' })
+            this.$router.push({ path: this.redloginirect || '/' })
             this.loading = false
           }).catch(() => {
             this.loading = false
