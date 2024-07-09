@@ -6,14 +6,8 @@
     <title>Title</title>
 </head>
 <body>
-    <p name="string_key">视频流： {{ key }}</p>
-    
-    <img id="capture_face" src="{% url 'recognize_face' %}?string_key={{ key }}" alt="capture face">
-    <form method="post" action="{% url 'index' %}">
-        {% csrf_token %}
-        <input type="submit" value="返回">
-        
-    </form>
+    <img id="capture_face" src="{% url 'recognize_face' %}" alt="capture face">
+
 
     
 </body>

@@ -1,6 +1,6 @@
 import json
 from urllib import response
-
+from cv2 import face
 import cv2
 
 from django.http import HttpResponse, StreamingHttpResponse
@@ -13,21 +13,13 @@ def face(request):
     return render(request, 'face.html')
 
 def capture_face_start(request):
-    if request.method == 'POST':
-        username = request.POST.get('username')
-        key = request.POST.get('string_key')
-        context = {
-            'username': username,
-            'key': key,
-        }
-        return render(request, 'capture_face.html',context)
+        return render(request, 'capture_face.html')
 
 #捕捉照片
 def capture_face(request):
     username = request.GET.get('username')
-    key = request.GET.get('string_key')
 
-    rtmpUrl = 'rtmp://116.62.245.164:1935/live/' + key
+    rtmpUrl = 'rtmp://116.62.245.164:1935/live'
     print('Connecting ' + rtmpUrl)
     cam = cv2.VideoCapture(rtmpUrl)
     if not cam.isOpened():
@@ -37,9 +29,9 @@ def capture_face(request):
     cam.set(4, 480)  # Set height
 
     def gen_display(cam, username):
-        directory = 'images'
-        cascade_classifier_filename = 'haarcascade_frontalface_default.xml'
-        names_json_filename = 'names.json'
+        directory = 'D:/summerProject2024/video/faceRecog/images'
+        cascade_classifier_filename = 'D:/summerProject2024/video/faceRecog/haarcascade_frontalface_default.xml'
+        names_json_filename = 'D:/summerProject2024/video/faceRecog/names.json'
 
         # Create 'images' directory if it doesn't exist
         create_directory(directory)
@@ -72,7 +64,7 @@ def capture_face(request):
                 count += 1
 
                 # Save the captured image into the 'images' directory
-                cv2.imwrite(f'./images/Users-{face_id}-{count}.jpg', gray[y:y + h, x:x + w])
+                cv2.imwrite(f'./faceRecog/images/Users-{face_id}-{count}.jpg', gray[y:y + h, x:x + w])
                 print("pic" + str(count))
 
                 # Display the image with rectangles around faces
@@ -104,19 +96,14 @@ def capture_face(request):
 
 
 def recognize_face_start(request):
-    if request.method == 'POST':
-        key = request.POST.get('string_key')
-        context = {
-            'key': key,
-        }
-        return render(request, 'recognize_face.html', context)
+        return render(request, 'recognize_face.html')
 
 
 def recognize_face(request):
     train_face_alg()
 
     key = request.GET.get('string_key')
-    rtmpUrl = 'rtmp://116.62.245.164:1935/live/' + key
+    rtmpUrl = 'rtmp://116.62.245.164:1935/live'
     print('Connecting ' + rtmpUrl)
     cam = cv2.VideoCapture(rtmpUrl)
     if not cam.isOpened():
@@ -130,10 +117,10 @@ def recognize_face(request):
         # Create LBPH Face Recognizer
         recognizer = cv2.face.LBPHFaceRecognizer_create()
         # Load the trained model
-        recognizer.read('trainer.yml')
+        recognizer.read('D:/summerProject2024/video/faceRecog/trainer.yml')
         print(recognizer)
         # Path to the Haar cascade file for face detection
-        face_cascade_Path = "haarcascade_frontalface_default.xml"
+        face_cascade_Path = "D:/summerProject2024/video/faceRecog/haarcascade_frontalface_default.xml"
 
         # Create a face cascade classifier
         faceCascade = cv2.CascadeClassifier(face_cascade_Path)
@@ -148,7 +135,7 @@ def recognize_face(request):
         id = 0
         # Don't forget to add names associated with user IDs
         names = ['None']
-        with open('names.json', 'r') as fs:
+        with open('D:/summerProject2024/video/faceRecog/names.json', 'r') as fs:
             names = json.load(fs)
             names = list(names.values())
 
@@ -174,7 +161,7 @@ def recognize_face(request):
                 # Recognize the face using the trained model
                 id, confidence = recognizer.predict(gray[y:y + h, x:x + w])
                 # Proba greater than 51
-                if confidence > 51:
+                if confidence > 60:
                     try:
                         # Recognized face
                         name = names[id]

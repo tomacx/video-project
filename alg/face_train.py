@@ -3,16 +3,15 @@ import numpy as np
 from PIL import Image
 import os
 
-#这一段是加载全部的图片进行训练，能不能实现只训练新添加的人
 
 def train_face_alg():
     
     # Directory path where the face images are stored.
-    path = 'images/'
+    path = 'faceRecog/images/'
     recognizer = cv2.face.LBPHFaceRecognizer_create()
     print("\n[INFO] Training...")
     # Haar cascade file for face detection
-    detector = cv2.CascadeClassifier("haarcascade_frontalface_default.xml")
+    detector = cv2.CascadeClassifier("D:/summerProject2024/video/faceRecog/haarcascade_frontalface_default.xml")
     
     def getImagesAndLabels(path):
         """
@@ -53,6 +52,6 @@ def train_face_alg():
     recognizer.train(faces, np.array(ids))
     
     # Save the trained model into the current directory
-    recognizer.write('trainer.yml')
+    recognizer.write('D:/summerProject2024/video/faceRecog/trainer.yml')
     
     print("\n[INFO] {0} faces trained. Exiting Program".format(len(np.unique(ids))))

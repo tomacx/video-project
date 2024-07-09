@@ -17,7 +17,18 @@
 
   <!-- Custom styles for this template-->
   <link href="../static/css/sb-admin-2.min.css" rel="stylesheet">
-    
+    <style>
+        #container {
+            position: relative;
+            width: 640px; /* 根据实际需要调整图片和canvas的宽度 */
+            height: 480px; /* 根据实际需要调整图片和canvas的高度 */
+        }
+        #imageCanvas {
+            position: absolute;
+            top: 194px;
+            left: 232px;
+        }
+    </style>
 </head>
 
 <body id="page-top">
@@ -323,12 +334,89 @@
           <h1 class="h3 mb-4 text-gray-800">Blank Page</h1>
             <h1>Video Streaming Demonstration</h1>
             <img src="{%  url 'video_feed' %}">
-            <form method="post">
-                <input type="submit" name="提交">
-            </form>
+            <canvas id="imageCanvas" width="640" height="480"></canvas>
+            <button id="submitButton">提交</button>
+            <button id="clearButton">清空</button>
         </div>
         <!-- /.container-fluid -->
+          <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var image = document.getElementById('img');
+            var canvas = document.getElementById('imageCanvas');
+            var ctx = canvas.getContext('2d');
+            var clearButton = document.getElementById('clearButton');
+            var submitButton = document.getElementById('submitButton');
+            // 记录点击的点的数组
+            var clickPoints = [];
+            var numPointsClicked = 0;// 用户点击的点个数
+            //提交点的坐标
+            submitButton.addEventListener('click',function(){
+                    sendPoints(clickPoints);
+            });
+            //监听清除按钮的点击事件
+            clearButton.addEventListener('click', function () {
+                //清楚整个 canvas区域
+                ctx.clearRect(0, 0, 1000, 1000);
+                clickPoints = [];
+                numPointsClicked = 0;
+            });
+            // 监听鼠标点击事件
+            canvas.addEventListener('click', function (event) {
+                var rect = canvas.getBoundingClientRect();
+                var x = event.clientX - rect.left;
+                var y = event.clientY - rect.top;
 
+                // 添加点击的点到数组中
+                clickPoints.push({x: x, y: y});
+                numPointsClicked++;
+
+                // 绘制点击的点
+                ctx.fillStyle = 'blue';
+                ctx.beginPath();
+                ctx.arc(x, y, 4, 0, Math.PI * 2);
+                ctx.fill();
+
+                // 如果点击了四个点，连接它们
+                if (numPointsClicked === 4) {
+                    ctx.beginPath();
+                    ctx.moveTo(clickPoints[0].x, clickPoints[0].y); // 移动到第一个点
+
+                    for (var i = 1; i < 4; i++) {
+                        ctx.lineTo(clickPoints[i].x, clickPoints[i].y); // 依次连接后面的点
+                    }
+
+                    ctx.closePath(); // 封闭路径
+                    ctx.strokeStyle = 'red';
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+                    numPointsClicked = 0;
+                }
+            });
+            
+            function sendPoints(points){
+                //用AJAX发送数据到后端
+                var xhr = new XMLHttpRequest();
+                var url = 'http://localhost:8000/handle_points';
+                xhr.open('POST',url,true);
+                xhr.setRequestHeader('Content-Type','application/json');
+               // 将坐标数据转换成 JSON 字符串
+                var data = JSON.stringify({ points: points });
+
+                xhr.onreadystatechange = function() {
+                    if (xhr.readyState === XMLHttpRequest.DONE) {
+                        if (xhr.status === 200) {
+                            console.log('Data sent successfully');
+                            // 可以处理后端返回的响应数据
+                        } else {
+                            console.error('Error sending data to backend');
+                        }
+                    }
+                };
+
+                xhr.send(data);
+            }
+        });
+    </script>
       </div>
       <!-- End of Main Content -->
 

@@ -6,15 +6,26 @@
 </head>
 <body>
     <h1>录入面部</h1>
-    <p name="username">用户名： {{ username }}</p>
-    <p name="string_key">视频流： {{ key }}</p>
 
-    <img id="capture_face" src="{% url 'capture_face' %}?username={{ username }}&string_key={{ key }}" alt="capture face">
-    
-    <form method="post" action="{% url 'index' %}">
-        {% csrf_token %}
-        <input type="submit" value="返回">
-        
+    <script>
+        function updateImage() {
+            // 获取用户名输入框的值
+            var username = document.getElementById('username').value;
+            // 构建新的图片 URL，假设使用一个视图函数 capture_face，并传递用户名作为参数
+            var imageUrl = "{% url 'capture_face' %}?username=" + encodeURIComponent(username);
+            // 更新图片的 src 属性
+            document.getElementById('capture_face').src = imageUrl;
+        }
+    </script>
+
+    <form onsubmit="updateImage(); return false;">
+        <label for="username">用户名：</label>
+        <input type="text" id="username" name="username">
+        <button type="submit">提交</button>
     </form>
+
+    <img id="capture_face" src="" alt="capture face">
+    
+    
 </body>
 </html>
