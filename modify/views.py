@@ -22,6 +22,7 @@ def userinfo(request):
         user_list = modify.models.User.objects.all()
     else:
         user_list = modify.models.User.objects.filter(username=username)
+
     return render(request, "userinfo.html", {"user_list": user_list})##将数据导入html模板中，进行数据渲染。
 def add(request):
     if request.method == 'GET':

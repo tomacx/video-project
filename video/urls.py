@@ -25,7 +25,9 @@ urlpatterns = [
     path('', include('modify.urls')),
     path('',include('regional.urls')),
     path('captcha',include('captcha.urls')),
-    path('',include('testHTML.urls'))
+    path('',include('testHTML.urls')),
+    path('',include('faceRecog.urls')),
+    path('',include('yolov5.urls'))
 ]
 
 urlpatterns += staticfiles_urlpatterns()

@@ -42,7 +42,9 @@ INSTALLED_APPS = [
     'modify',
     'corsheaders',
     'regional',
-    'testHTML'
+    'testHTML',
+    'faceRecog',
+    'yolov5'
     #这里添加应用
 ]
 
