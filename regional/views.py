@@ -6,6 +6,8 @@ import os
 import platform
 import sys
 from pathlib import Path
+
+import numpy as np
 import torch
 
 from django.shortcuts import render
@@ -45,6 +47,10 @@ from utils.general import (
 )
 from utils.torch_utils import select_device, smart_inference_mode
 
+# 初始状态为视频流捕获
+current_stream_type = 'video'
+current_video_stream = None  # 用于存储当前视频流捕获对象
+
 # Create your views here.
 def regional(request):
 
@@ -52,16 +58,21 @@ def regional(request):
 
 def video_feed(request):
     cap = cv2.VideoCapture("rtmp://116.62.245.164:1935/live")
-    return StreamingHttpResponse(generate_frames(cap), content_type='multipart/x-mixed-replace; boundary=frame')
+    return StreamingHttpResponse(generate_frames1(cap), content_type='multipart/x-mixed-replace; boundary=frame')
 
-def generate_frames(cap):
+def video_feed2(request):
+    opt = parse_opt()
+    return StreamingHttpResponse(generate_frames(**vars(opt)), content_type='multipart/x-mixed-replace; boundary=frame')
+
+
+def generate_frames1(cap):
     while True:
         ret, frame = cap.read()
         if not ret:
             break
-            _, jpeg = cv2.imencode('.jpg', frame)
-            yield (b'--frame\r\n'
-                       b'Content-Type: image/jpeg\r\n\r\n' + jpeg.tobytes() + b'\r\n\r\n')
+        _, jpeg = cv2.imencode('.jpeg', frame)
+        yield (b'--frame\r\n'
+                    b'Content-Type: image/jpeg\r\n\r\n' + jpeg.tobytes() + b'\r\n\r\n')
 
 
 def generate_frames(
@@ -93,7 +104,10 @@ def generate_frames(
     half=False,  # use FP16 half-precision inference
     dnn=False,  # use OpenCV DNN for ONNX inference
     vid_stride=1,  # video frame-rate stride
+    person_num=[0],# 视频中人数
+    point=[] # 目前的坐标点
 ):
+
     source = str(source)
     save_img = not nosave and not source.endswith(".txt")  # save inference images
     is_file = Path(source).suffix[1:] in (IMG_FORMATS + VID_FORMATS)
@@ -130,6 +144,43 @@ def generate_frames(
     seen, windows, dt = 0, [], (Profile(device=device), Profile(device=device), Profile(device=device))
     for path, im, im0s, vid_cap, s in dataset:
         #添加点处理
+        # mask for certain region
+        #1,2,3,4 分别对应左上，右上，右下，左下四个点
+        wl1 = point[0] / 640.0 #监测区域高度距离图片顶部比例
+        hl1 = point[1] / 480.0 #监测区域高度距离图片左部比例
+        wl2 = point[2] / 640.0 # 监测区域高度距离图片顶部比例
+        hl2 = point[3] / 480.0 # 监测区域高度距离图片左部比例
+        wl3 = point[4] / 640.0 # 监测区域高度距离图片顶部比例
+        hl3 = point[5] / 480.0 # 监测区域高度距离图片左部比例
+        wl4 = point[6] / 640.0 # 监测区域高度距离图片顶部比例
+        hl4 = point[7] / 480.0 # 监测区域高度距离图片左部比例
+
+        if webcam:
+            for b in range(0,im.shape[0]):
+                mask = np.zeros([im[b].shape[1], im[b].shape[2]], dtype=np.uint8)
+                #mask[round(im[b].shape[1] * hl1):im[b].shape[1], round(im[b].shape[2] * wl1):im[b].shape[2]] = 255
+                pts = np.array([[int(im[b].shape[2] * wl1), int(im[b].shape[1] * hl1)],  # pts1
+                                [int(im[b].shape[2] * wl2), int(im[b].shape[1] * hl2)],  # pts2
+                                [int(im[b].shape[2] * wl3), int(im[b].shape[1] * hl3)],  # pts3
+                                [int(im[b].shape[2] * wl4), int(im[b].shape[1] * hl4)]], np.int32)
+                mask = cv2.fillPoly(mask,[pts],(255,255,255))
+                imgc = im[b].transpose((1, 2, 0))
+                imgc = cv2.add(imgc, np.zeros(np.shape(imgc), dtype=np.uint8), mask=mask)
+                cv2.imshow('1',imgc)
+                im[b] = imgc.transpose((2, 0, 1))
+
+        else:
+            mask = np.zeros([im.shape[1], im.shape[2]], dtype=np.uint8)
+            #mask[round(img.shape[1] * hl1):img.shape[1], round(img.shape[2] * wl1):img.shape[2]] = 255
+            pts = np.array([[int(im[b].shape[2] * wl1), int(im[b].shape[1] * hl1)],  # pts1
+                                [int(im[b].shape[2] * wl2), int(im[b].shape[1] * hl2)],  # pts2
+                                [int(im[b].shape[2] * wl3), int(im[b].shape[1] * hl3)],  # pts3
+                                [int(im[b].shape[2] * wl4), int(im[b].shape[1] * hl4)]], np.int32)
+            mask = cv2.fillPoly(mask, [pts], (255,255,255))
+            im = im.transpose((1, 2, 0))
+            im = cv2.add(im, np.zeros(np.shape(im), dtype=np.uint8), mask=mask)
+            im = im.transpose((2, 0, 1))
+
 
         with dt[0]:
             im = torch.from_numpy(im).to(model.device)
@@ -224,7 +275,7 @@ def generate_frames(
                 text_size, _ = cv2.getTextSize(text, cv2.FONT_HERSHEY_SIMPLEX, 1, 2)
                 cv2.putText(im0, text, (640 - text_size[0] - 10, 50), cv2.FONT_HERSHEY_SIMPLEX, 1,
                             (0, 255, 0), 2)
-
+                print(person_num)
             # Stream results
             im0 = annotator.result()
             if view_img:
@@ -237,18 +288,34 @@ def generate_frames(
                 yield (b'--frame\r\n'
                        b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
 
+def video_capture_stop():
+    global current_video_stream
+    if current_video_stream is not None:
+        current_video_stream.release()
+        current_video_stream = None
 def handle_points(request):
-    if request.method == 'POST':
-        try:
-            data = json.loads(request.body)
-            points = data['points']
-            # 点个数
-            print(points)
+    global current_stream_type,current_video_stream
+    try:
+        data_list = json.loads(request.body)
 
-            opt = parse_opt("yolov5s.pt")
-            return StreamingHttpResponse(generate_frames(**vars(opt)), content_type='multipart/x-mixed-replace; boundary=frame')
-        except json.JSONDecodeError as e:
-            return JsonResponse({'error': 'Invalid JSON format'}, status=400)
+        points = []
+        for data in data_list:
+            points.append(data['x'])
+            points.append(data['y'])
 
-    else:
-        return JsonResponse({'error': 'Only POST method allowed'}, status=405)
+        print(points)
+        if current_stream_type == 'video':
+            video_capture_stop()
+
+        opt = parse_opt(points)
+        current_stream_type = 'coordinate'
+        current_video_stream = cv2.VideoCapture("rtmp://116.62.245.164:1935/live")
+        return StreamingHttpResponse(generate_frames(**vars(opt)),  content_type='multipart/x-mixed-replace; boundary=frame')
+        #return StreamingHttpResponse(generate_frames1(current_video_stream),
+        #                         content_type='multipart/x-mixed-replace; boundary=frame')
+    except json.JSONDecodeError as e:
+        video_capture_stop()
+        current_video_stream = cv2.VideoCapture("rtmp://116.62.245.164:1935/live/1")
+        current_stream_type = 'video'
+        return StreamingHttpResponse(generate_frames1(current_video_stream),
+                                             content_type='multipart/x-mixed-replace; boundary=frame')

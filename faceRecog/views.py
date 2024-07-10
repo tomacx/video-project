@@ -1,4 +1,5 @@
 import json
+import os
 from urllib import response
 from cv2 import face
 import cv2
@@ -9,8 +10,7 @@ from alg.face_taker import create_directory, get_face_id, save_name
 from alg.face_train import train_face_alg
 from alg.face_recognizer import recognizer_face_alg
 
-def face(request):
-    return render(request, 'face.html')
+from faceRecog.models import Face
 
 def capture_face_start(request):
         return render(request, 'capture_face.html')
@@ -55,6 +55,12 @@ def capture_face(request):
             # Detect faces in the frame
             faces = faceCascade.detectMultiScale(gray, scaleFactor=1.3, minNeighbors=5)
 
+            path = "D:\summerProject2024\video\faceRecog\images"
+            os.chdir(path)
+            new_folder = str(face_id)
+            os.makedirs(new_folder)
+
+            os.makedirs(path)
             # Process each detected face
             for (x, y, w, h) in faces:
                 # Draw a rectangle around the detected face
@@ -64,7 +70,13 @@ def capture_face(request):
                 count += 1
 
                 # Save the captured image into the 'images' directory
-                cv2.imwrite(f'./faceRecog/images/Users-{face_id}-{count}.jpg', gray[y:y + h, x:x + w])
+                cv2.imwrite(f'./faceRecog/images/{face_id}/Users-{count}.jpg', gray[y:y + h, x:x + w])
+
+                #存人脸到数据库
+                new_face = face(username=username)
+                new_face.faceSave = f'faceRecog/images/Users-{face_id}-{count}.jpg'
+
+                new_face.save()
                 print("pic" + str(count))
 
                 # Display the image with rectangles around faces
@@ -186,3 +198,13 @@ def recognize_face(request):
 
     return StreamingHttpResponse(gen_display_recognize(cam), content_type='multipart/x-mixed-replace; boundary=frame')
 
+def show_face(request):
+    user_first_images = []
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        face_list = Face.objects.filter(username=username).distinct()
+    else:
+        face_list = Face.objects.values('username').distinct()
+
+
+    return render(request, "show_face.html", {"face_list": face_list})  ##将数据导入html模板中，进行数据渲染。

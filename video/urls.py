@@ -18,7 +18,10 @@ from django.contrib import admin
 from django.urls import path
 from django.urls import include
 from userLogin import views
+from django.conf.urls.static import static
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
+
+from video import settings
 
 urlpatterns = [
     path('', include('userLogin.urls')),
@@ -28,6 +31,6 @@ urlpatterns = [
     path('',include('testHTML.urls')),
     path('',include('faceRecog.urls')),
     path('',include('yolov5.urls'))
-]
+]+static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 urlpatterns += staticfiles_urlpatterns()

@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>用户照片</title>
+</head>
+<body>
+    <form method="post">
+        <input type="text" name="username" placeholder="用户名">
+        <input type="submit" value="筛选">
+    </form>
+    <ul>
+        {% for face in face_list %}
+        <li>
+            <p>用户名：{{ face.username }}</p>
+            <img src = "{{ MEDIA_URL }}{{ face.faceSave }}" alt="照片">
+
+        </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

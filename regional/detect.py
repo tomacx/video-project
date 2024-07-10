@@ -265,7 +265,7 @@ def run(
         strip_optimizer(weights[0])  # update model (to fix SourceChangeWarning)
 
 
-def parse_opt():
+def parse_opt(points):
     """Parses command-line arguments for YOLOv5 detection, setting inference options and model configurations."""
     parser = argparse.ArgumentParser()
     parser.add_argument("--weights", nargs="+", type=str, default=ROOT / "yolov5s.pt", help="model path or triton URL")
@@ -297,7 +297,7 @@ def parse_opt():
     parser.add_argument("--dnn", action="store_true", help="use OpenCV DNN for ONNX inference")
     parser.add_argument("--vid-stride", type=int, default=1, help="video frame-rate stride")
     parser.add_argument("--person_num", type=int, default=0, help="video person num")
-    parser.add_argument("--points",type)
+    parser.add_argument("--point",type=list,default=points,help="list of points")
     opt = parser.parse_args(args=[])
     opt.imgsz *= 2 if len(opt.imgsz) == 1 else 1  # expand
     print_args(vars(opt))

@@ -64,7 +64,7 @@
           <div class="bg-white py-2 collapse-inner rounded">
             <h6 class="collapse-header">选项</h6>
             <a class="collapse-item" href="userinfo">员工信息</a>
-            <a class="collapse-item" href="cards.html">人脸信息</a>
+            <a class="collapse-item" href="show_face">人脸信息</a>
           </div>
         </div>
       </li>
@@ -208,14 +208,14 @@
             <!-- Nav Item - User Information -->
             <li class="nav-item dropdown no-arrow">
               <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                <span class="mr-2 d-none d-lg-inline text-gray-600 small">username</span>
+                <span class="mr-2 d-none d-lg-inline text-gray-600 small">用户名</span>
                 <img class="img-profile rounded-circle" src="/static/img/profile.jpg">
               </a>
               <!-- Dropdown - User Information -->
               <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
                 <a class="dropdown-item" href="login" data-toggle="modal" data-target="#logoutModal">
                   <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
-                  Logout
+                  登出
                 </a>
               </div>
             </li>
@@ -289,8 +289,7 @@
               </div>
             </div>
           </div>
-
-      </div>
+            
       <!-- End of Main Content -->
 
       <!-- Footer -->
@@ -319,20 +318,20 @@
     <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel">Ready to Leave?</h5>
+          <h5 class="modal-title" id="exampleModalLabel">确定退出？</h5>
           <button class="close" type="button" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">×</span>
           </button>
         </div>
-        <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
+        <div class="modal-body">选择"登出"按钮，如果你确认要离开。</div>
         <div class="modal-footer">
-          <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
-          <a class="btn btn-primary" href="login">Logout</a>
+          <button class="btn btn-secondary" type="button" data-dismiss="modal">取消</button>
+          <a class="btn btn-primary" href="login">登出</a>
         </div>
       </div>
     </div>
   </div>
-
+      
   <!-- Bootstrap core JavaScript-->
   <script src="../static/vendor/jquery/jquery.min.js"></script>
   <script src="../static/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
@@ -349,7 +348,8 @@
   <!-- Page level custom scripts -->
   <script src="../static/js/demo/chart-area-demo.js"></script>
   <script src="../static/js/demo/chart-pie-demo.js"></script>
-
+    </div>      
+  </div>
 </body>
 
 </html>
