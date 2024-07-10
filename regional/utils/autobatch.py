@@ -6,8 +6,8 @@ from copy import deepcopy
 import numpy as np
 import torch
 
-from utils.general import LOGGER, colorstr
-from utils.torch_utils import profile
+from regional.utils.general import LOGGER, colorstr
+from regional.utils.torch_utils import profile
 
 
 def check_train_batch_size(model, imgsz=640, amp=True):

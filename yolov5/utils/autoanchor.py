@@ -8,8 +8,8 @@ import torch
 import yaml
 from tqdm import tqdm
 
-from utils import TryExcept
-from utils.general import LOGGER, TQDM_BAR_FORMAT, colorstr
+from regional.utils import TryExcept
+from regional.utils.general import LOGGER, TQDM_BAR_FORMAT, colorstr
 
 PREFIX = colorstr("AutoAnchor: ")
 
@@ -81,7 +81,7 @@ def kmean_anchors(dataset="./data/coco128.yaml", n=9, img_size=640, thr=4.0, gen
     Usage:
         from utils.autoanchor import *; _ = kmean_anchors()
     """
-    from scipy.cluster.vq import kmeans
+   #  from scipy.cluster.vq import kmeans
 
     npr = np.random
     thr = 1 / thr

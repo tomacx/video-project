@@ -37,10 +37,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'captcha',
     'userLogin',
     'modify',
-    'corsheaders',
     'regional',
     'testHTML',
     'faceRecog',
@@ -81,7 +79,8 @@ ROOT_URLCONF = 'video.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')]###修改默认生成
+        ,
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -153,8 +152,8 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = (                    # static的配置 将css,js和img存储在static文件夹下
     os.path.join(BASE_DIR, 'static/'),
 )
-MEDIA_URL = '/faceRecog/images/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'faceRecog', 'images')
+MEDIA_URL = '/'
+MEDIA_ROOT = os.path.join(BASE_DIR, '')
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 

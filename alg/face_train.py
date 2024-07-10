@@ -7,11 +7,11 @@ import os
 def train_face_alg():
     
     # Directory path where the face images are stored.
-    path = 'faceRecog/images/'
+    path = 'faceRecog1/images/'
     recognizer = cv2.face.LBPHFaceRecognizer_create()
     print("\n[INFO] Training...")
     # Haar cascade file for face detection
-    detector = cv2.CascadeClassifier("D:/summerProject2024/video/faceRecog/haarcascade_frontalface_default.xml")
+    detector = cv2.CascadeClassifier("D:/summerProject2024/video/faceRecog1/haarcascade_frontalface_default.xml")
     
     def getImagesAndLabels(path):
         """
@@ -52,6 +52,6 @@ def train_face_alg():
     recognizer.train(faces, np.array(ids))
     
     # Save the trained model into the current directory
-    recognizer.write('D:/summerProject2024/video/faceRecog/trainer.yml')
+    recognizer.write('D:/summerProject2024/video/faceRecog1/trainer.yml')
     
     print("\n[INFO] {0} faces trained. Exiting Program".format(len(np.unique(ids))))

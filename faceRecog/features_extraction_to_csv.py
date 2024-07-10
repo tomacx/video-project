@@ -16,16 +16,16 @@ import logging
 import cv2
 
 # 要读取人脸图像文件的路径 / Path of cropped faces
-path_images_from_camera = "data/data_faces_from_camera/"
+path_images_from_camera = "faceRecog/data/data_faces_from_camera/"
 
 # Dlib 正向人脸检测器 / Use frontal face detector of Dlib
 detector = dlib.get_frontal_face_detector()
 
 # Dlib 人脸 landmark 特征点检测器 / Get face landmarks
-predictor = dlib.shape_predictor('data/data_dlib/shape_predictor_68_face_landmarks.dat')
+predictor = dlib.shape_predictor('faceRecog/data/data_dlib/shape_predictor_68_face_landmarks.dat')
 
 # Dlib Resnet 人脸识别模型，提取 128D 的特征矢量 / Use Dlib resnet50 model to get 128D face descriptor
-face_reco_model = dlib.face_recognition_model_v1("data/data_dlib/dlib_face_recognition_resnet_model_v1.dat")
+face_reco_model = dlib.face_recognition_model_v1("faceRecog/data/data_dlib/dlib_face_recognition_resnet_model_v1.dat")
 
 
 # 返回单张图像的 128D 特征 / Return 128D features for single image
@@ -76,13 +76,13 @@ def return_features_mean_personX(path_face_personX):
     return features_mean_personX
 
 
-def main():
+def features_to_csv():
     logging.basicConfig(level=logging.INFO)
     # 获取已录入的最后一个人脸序号 / Get the order of latest person
-    person_list = os.listdir("data/data_faces_from_camera/")
+    person_list = os.listdir("faceRecog/data/data_faces_from_camera/")
     person_list.sort()
 
-    with open("data/features_all.csv", "w", newline="") as csvfile:
+    with open("faceRecog/data/features_all.csv", "w", newline="") as csvfile:
         writer = csv.writer(csvfile)
         for person in person_list:
             # Get the mean/average features of face/personX, it will be a list with a length of 128D
@@ -100,7 +100,3 @@ def main():
             writer.writerow(features_mean_personX)
             logging.info('\n')
         logging.info("所有录入人脸数据存入 / Save all the features of faces registered into: data/features_all.csv")
-
-
-if __name__ == '__main__':
-    main()

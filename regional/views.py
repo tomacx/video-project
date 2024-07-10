@@ -6,9 +6,9 @@ import os
 import platform
 import sys
 from pathlib import Path
-
-import numpy as np
 import torch
+import numpy as np
+
 
 from django.shortcuts import render
 from django.http import StreamingHttpResponse, HttpResponse, JsonResponse, HttpResponseBadRequest
@@ -27,9 +27,9 @@ ROOT = Path(os.path.relpath(ROOT, Path.cwd()))  # relative
 
 from ultralytics.utils.plotting import Annotator, colors, save_one_box
 
-from models.common import DetectMultiBackend
-from utils.dataloaders import IMG_FORMATS, VID_FORMATS, LoadImages, LoadScreenshots, LoadStreams
-from utils.general import (
+from regional.models.common import DetectMultiBackend
+from regional.utils.dataloaders import IMG_FORMATS, VID_FORMATS, LoadImages, LoadScreenshots, LoadStreams
+from regional.utils.general import (
     LOGGER,
     Profile,
     check_file,
@@ -45,11 +45,7 @@ from utils.general import (
     strip_optimizer,
     xyxy2xywh,
 )
-from utils.torch_utils import select_device, smart_inference_mode
-
-# 初始状态为视频流捕获
-current_stream_type = 'video'
-current_video_stream = None  # 用于存储当前视频流捕获对象
+from regional.utils.torch_utils import select_device, smart_inference_mode
 
 # Create your views here.
 def regional(request):
@@ -288,13 +284,9 @@ def generate_frames(
                 yield (b'--frame\r\n'
                        b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
 
-def video_capture_stop():
-    global current_video_stream
-    if current_video_stream is not None:
-        current_video_stream.release()
-        current_video_stream = None
+
 def handle_points(request):
-    global current_stream_type,current_video_stream
+
     try:
         data_list = json.loads(request.body)
 
@@ -304,18 +296,16 @@ def handle_points(request):
             points.append(data['y'])
 
         print(points)
-        if current_stream_type == 'video':
-            video_capture_stop()
 
         opt = parse_opt(points)
-        current_stream_type = 'coordinate'
+
         current_video_stream = cv2.VideoCapture("rtmp://116.62.245.164:1935/live")
         return StreamingHttpResponse(generate_frames(**vars(opt)),  content_type='multipart/x-mixed-replace; boundary=frame')
         #return StreamingHttpResponse(generate_frames1(current_video_stream),
         #                         content_type='multipart/x-mixed-replace; boundary=frame')
     except json.JSONDecodeError as e:
-        video_capture_stop()
+
         current_video_stream = cv2.VideoCapture("rtmp://116.62.245.164:1935/live/1")
-        current_stream_type = 'video'
+
         return StreamingHttpResponse(generate_frames1(current_video_stream),
                                              content_type='multipart/x-mixed-replace; boundary=frame')

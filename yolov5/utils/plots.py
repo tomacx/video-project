@@ -18,9 +18,9 @@ from PIL import Image, ImageDraw
 from scipy.ndimage.filters import gaussian_filter1d
 from ultralytics.utils.plotting import Annotator
 
-from utils import TryExcept, threaded
-from utils.general import LOGGER, clip_boxes, increment_path, xywh2xyxy, xyxy2xywh
-from utils.metrics import fitness
+from yolov5.utils import TryExcept, threaded
+from yolov5.utils.general import LOGGER, clip_boxes, increment_path, xywh2xyxy, xyxy2xywh
+from yolov5.utils.metrics import fitness
 
 # Settings
 RANK = int(os.getenv("RANK", -1))

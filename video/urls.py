@@ -27,9 +27,8 @@ urlpatterns = [
     path('', include('userLogin.urls')),
     path('', include('modify.urls')),
     path('',include('regional.urls')),
-    path('captcha',include('captcha.urls')),
     path('',include('testHTML.urls')),
-    path('',include('faceRecog.urls')),
+    path('', include('faceRecog.urls')),
     path('',include('yolov5.urls'))
 ]+static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
