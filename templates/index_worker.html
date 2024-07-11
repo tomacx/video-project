@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -15,7 +17,9 @@
 
   <!-- Custom styles for this template-->
   <link href="../static/css/sb-admin-2.min.css" rel="stylesheet">
+
 </head>
+
 <body id="page-top">
 
   <!-- Page Wrapper -->
@@ -25,7 +29,7 @@
     <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
 
       <!-- Sidebar - Brand -->
-      <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
+      <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index_worker.html">
         <div class="sidebar-brand-icon rotate-n-15">
           <i class="fas fa-laugh-wink"></i>
         </div>
@@ -37,7 +41,7 @@
 
       <!-- Nav Item - Dashboard -->
       <li class="nav-item active">
-        <a class="nav-link" href="index.html">
+        <a class="nav-link" href="index_worker.html">
           <i class="fas fa-fw fa-tachometer-alt"></i>
           <span>首页</span></a>
       </li>
@@ -54,13 +58,13 @@
       <li class="nav-item">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
           <i class="fas fa-fw fa-cog"></i>
-          <span>人员管理</span>
+          <span>个人信息</span>
         </a>
         <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
           <div class="bg-white py-2 collapse-inner rounded">
             <h6 class="collapse-header">选项</h6>
-            <a class="collapse-item" href="userinfo">员工信息</a>
-            <a class="collapse-item" href="show_face">人脸信息</a>
+            <a class="collapse-item" href="userinfo_worker">查看个人信息</a>
+            <a class="collapse-item" href="show_face">修改个人信息</a>
           </div>
         </div>
       </li>
@@ -74,47 +78,29 @@
         <div id="collapseUtilities" class="collapse" aria-labelledby="headingUtilities" data-parent="#accordionSidebar">
           <div class="bg-white py-2 collapse-inner rounded">
             <h6 class="collapse-header">选项</h6>
-            <a class="collapse-item" href="capture_face_start">人脸录入</a>
-            <a class="collapse-item" href="recognize_face_start">人脸识别</a>
-
+            <a class="collapse-item" href="capture_face_start_worker">人脸录入</a>
+            <a class="collapse-item" href="recognize_face_start_worker">人脸识别</a>
           </div>
         </div>
       </li>
-
-      <li class="nav-item">
-        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePages" aria-expanded="true" aria-controls="collapsePages">
-          <i class="fas fa-fw fa-folder"></i>
-          <span>实时监测</span>
-        </a>
-        <div id="collapsePages" class="collapse" aria-labelledby="headingPages" data-parent="#accordionSidebar">
-          <div class="bg-white py-2 collapse-inner rounded">
-              <h6 class="collapse-header">选项</h6>
-              <a class="collapse-item" href="regional">区域监测</a>
-              <a class="collapse-item" href="detect_object_start">目标追踪</a>
-              <a class="collapse-item" href="detect_act_start">异常行为监测</a>
-              <a class="collapse-item" href="detect_knife_start">物品监测</a>
-              <a class="collapse-item" href="detect_fire_start">火灾监测</a>
-          </div>
-        </div>
-      </li>
-
+        
       <!-- Divider -->
       <hr class="sidebar-divider">
 
       <!-- Heading -->
-
+      
 
       <!-- Nav Item - Pages Collapse Menu -->
-
+        
         <!-- 上面那段拿来借用啦~>
       <！-- Nav Item - Charts -->
-
+      
 
       <!-- Nav Item - Tables -->
-
+     
 
       <!-- Divider -->
-
+      
 
       <!-- Sidebar Toggler (Sidebar) -->
       <div class="text-center d-none d-md-inline">
@@ -221,40 +207,74 @@
         </nav>
         <!-- End of Topbar -->
 
-    <script>
-        function updateImage() {
-            // 获取用户名输入框的值
-            var username = document.getElementById('username').value;
-            // 构建新的图片 URL，假设使用一个视图函数 capture_face，并传递用户名作为参数
-            var imageUrl = "{% url 'capture_face' %}?username=" + encodeURIComponent(username);
-            // 更新图片的 src 属性
-            document.getElementById('capture_face').src = imageUrl;
-        }
-    </script>
+        <!-- Begin Page Content -->
+        <div class="container-fluid">
+            <div class="row">
+             <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                  <h6 class="m-0 font-weight-bold text-primary">系统介绍</h6>
+                </div>
+                <div class="card-body">
+                  <p>  本系统旨在提供一个高效的音乐厅安全监测与防控系统，能够对进出音乐厅的人员进行人脸识别，实时监控进入音乐厅的人员，确保只有授权人员能进入。如果监测到威胁公共安全或影响场馆秩序的异常情况，需及时向管理员发送报警信息，由管理员进行研判处理，以保障音乐厅内人员的基本安全与演出顺利进行。</p>
+                  </div>
+              </div>
+            </div>
+          <!-- Page Heading -->
+          <div class="d-sm-flex align-items-center justify-content-between mb-4">
+            <h1 class="h3 mb-0 text-gray-800">功能模块</h1>
 
-    <div class="container-fluid">
-    <h1>人脸录入</h1>
-    <div class="d-sm-flex align-items-center justify-content-between mb-4">
-    <form onsubmit="updateImage(); return false;">
-        <label for="username">用户名：</label>
-        <input type="text" id="username" name="username">
-        <hr>
-        <button type="submit" class="btn btn-primary btn-icon-split">上传用户名</button>
-        </form>
-    </div>
-        <form method="post" action="{%url 'take_photo' %}">
-            <button id="submitButton" type="submit" class="btn btn-primary btn-icon-split">录入人脸</button>
-        </form>
-</div>
-    <script>
-
-    </script>
-
-    <img id="capture_face" src="" alt="capture face">
           </div>
-      
-        
-    <!-- Footer -->
+
+          <!-- Content Row -->
+          <div class="row">
+
+            <!-- Earnings (Monthly) Card Example -->
+            <div class="col-xl-3 col-md-6 mb-4">
+              <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                  <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                      <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">人脸识别</div>
+                      <div class="h5 mb-0 font-weight-bold text-gray-800">提供人脸识别技术，识别入场人员是否具有进入权限，同时可根据人员出入情况，对室内的人员数量和人员身份进行实时监测。</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+
+            <!-- Earnings (Monthly) Card Example -->
+            <div class="col-xl-3 col-md-6 mb-4">
+              <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                  <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                      <div class="text-xs font-weight-bold text-success text-uppercase mb-1">实时检测</div>
+                      <div class="h5 mb-0 font-weight-bold text-gray-800">提供实时监测技术，分别对音乐厅内人员状态、手持物品和特定区域进行实时监测。</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Earnings (Monthly) Card Example -->
+            <div class="col-xl-3 col-md-6 mb-4">
+              <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                  <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                      <div class="text-xs font-weight-bold text-success text-uppercase mb-1">报警功能</div>
+                      <div class="h5 mb-0 font-weight-bold text-gray-800">提供报警功能及事件处置功能，系统实时收集室内视频信号，判断其中是否存在异常信息，并设计不同的报警渠道对应多种实际场景。</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+            
+      <!-- End of Main Content -->
+
+      <!-- Footer -->
       <footer class="sticky-footer bg-white">
         <div class="container my-auto">
           <div class="copyright text-center my-auto">
@@ -293,7 +313,7 @@
       </div>
     </div>
   </div>
-
+      
   <!-- Bootstrap core JavaScript-->
   <script src="../static/vendor/jquery/jquery.min.js"></script>
   <script src="../static/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
@@ -310,6 +330,8 @@
   <!-- Page level custom scripts -->
   <script src="../static/js/demo/chart-area-demo.js"></script>
   <script src="../static/js/demo/chart-pie-demo.js"></script>
- 
+    </div>      
+  </div>
 </body>
+
 </html>

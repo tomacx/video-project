@@ -36,7 +36,22 @@ face_reco_model = dlib.face_recognition_model_v1("faceRecog/data/data_dlib/dlib_
 def capture_face_start(request):
         return render(request, 'capture_face.html')
 
+def capture_face_start_worker(request):
+    return render(request, 'capture_face_worker.html')
+def show_face(request):
+    face_list = Face.objects.all()
+    return render(request, "show_face.html", {"face_list": face_list})  ##将数据导入html模板中，进行数据渲染。
 
+
+def show_face_search(request):
+    if request.method == 'POST':
+        user_name = request.POST.get('username')
+        if len(user_name) == 0:
+            face_list = Face.objects.all()
+            return render(request, "show_face.html", {"face_list": face_list})  ##将数据导入html模板中，进行数据渲染。
+
+        face_list = Face.objects.filter(username=user_name)
+        return render(request, "show_face.html", {"face_list": face_list})  ##将数据导入html模板中，进行数据渲染。
 
 
 class Face_Register:
@@ -515,6 +530,8 @@ class Face_Recognizer:
 
 def recognize_face_start(request):
     return render(request, 'recognize_face.html')
+def recognize_face_start_worker(request):
+    return render(request,'recognize_face_worker.html')
 
 def recognize_face(request):
     logging.basicConfig(level=logging.INFO)

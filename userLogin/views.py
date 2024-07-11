@@ -12,6 +12,7 @@ from django.template import RequestContext
 from userLogin.form import UserLogin,UserRegister
 from modify import models
 
+USERNAME = ''
 # Create your views here.
 def take_md5(content):
     content_bytes = content.encode('utf-8') #将字符串转为字节对象
@@ -29,8 +30,13 @@ def login(request):
             password = take_md5(password)
             namefilter = User.objects.filter(username=username,password=password)
             print(username)
-            if len(namefilter) > 0:
+            if len(namefilter) > 0 and namefilter[0].type == "管理员":
                 return redirect("/index")
+            elif len(namefilter) > 0 and namefilter[0].type == "场务人员":
+                request.session['USERNAME'] = username  # 保存数据到会话
+                print(request.session['USERNAME'])
+
+                return redirect("/index_worker")
             else:
                 return render(request,'login.html',{'form':form})
         else:

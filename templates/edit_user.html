@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -15,6 +17,8 @@
 
   <!-- Custom styles for this template-->
   <link href="../static/css/sb-admin-2.min.css" rel="stylesheet">
+
+
 </head>
 <body id="page-top">
 
@@ -25,7 +29,7 @@
     <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
 
       <!-- Sidebar - Brand -->
-      <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
+      <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index">
         <div class="sidebar-brand-icon rotate-n-15">
           <i class="fas fa-laugh-wink"></i>
         </div>
@@ -37,7 +41,7 @@
 
       <!-- Nav Item - Dashboard -->
       <li class="nav-item active">
-        <a class="nav-link" href="index.html">
+        <a class="nav-link" href="index">
           <i class="fas fa-fw fa-tachometer-alt"></i>
           <span>首页</span></a>
       </li>
@@ -60,7 +64,7 @@
           <div class="bg-white py-2 collapse-inner rounded">
             <h6 class="collapse-header">选项</h6>
             <a class="collapse-item" href="userinfo">员工信息</a>
-            <a class="collapse-item" href="show_face">人脸信息</a>
+            <a class="collapse-item" href="cards.html">人脸信息</a>
           </div>
         </div>
       </li>
@@ -76,11 +80,11 @@
             <h6 class="collapse-header">选项</h6>
             <a class="collapse-item" href="capture_face_start">人脸录入</a>
             <a class="collapse-item" href="recognize_face_start">人脸识别</a>
-
+            
           </div>
         </div>
       </li>
-
+        
       <li class="nav-item">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePages" aria-expanded="true" aria-controls="collapsePages">
           <i class="fas fa-fw fa-folder"></i>
@@ -96,25 +100,25 @@
               <a class="collapse-item" href="detect_fire_start">火灾监测</a>
           </div>
         </div>
-      </li>
-
+      </li>  
+        
       <!-- Divider -->
       <hr class="sidebar-divider">
 
       <!-- Heading -->
-
+      
 
       <!-- Nav Item - Pages Collapse Menu -->
-
+        
         <!-- 上面那段拿来借用啦~>
       <！-- Nav Item - Charts -->
-
+      
 
       <!-- Nav Item - Tables -->
-
+     
 
       <!-- Divider -->
-
+      
 
       <!-- Sidebar Toggler (Sidebar) -->
       <div class="text-center d-none d-md-inline">
@@ -221,40 +225,56 @@
         </nav>
         <!-- End of Topbar -->
 
-    <script>
-        function updateImage() {
-            // 获取用户名输入框的值
-            var username = document.getElementById('username').value;
-            // 构建新的图片 URL，假设使用一个视图函数 capture_face，并传递用户名作为参数
-            var imageUrl = "{% url 'capture_face' %}?username=" + encodeURIComponent(username);
-            // 更新图片的 src 属性
-            document.getElementById('capture_face').src = imageUrl;
-        }
-    </script>
 
-    <div class="container-fluid">
-    <h1>人脸录入</h1>
-    <div class="d-sm-flex align-items-center justify-content-between mb-4">
-    <form onsubmit="updateImage(); return false;">
-        <label for="username">用户名：</label>
-        <input type="text" id="username" name="username">
-        <hr>
-        <button type="submit" class="btn btn-primary btn-icon-split">上传用户名</button>
-        </form>
-    </div>
-        <form method="post" action="{%url 'take_photo' %}">
-            <button id="submitButton" type="submit" class="btn btn-primary btn-icon-split">录入人脸</button>
-        </form>
-</div>
-    <script>
+        <!-- Begin Page Content -->
+        <div class="container-fluid">
 
-    </script>
+          <!-- Page Heading -->
+          <h1 class="h3 mb-2 text-gray-800">人员管理</h1>
+          <p class="mb-4">在此处输入需要修改的信息并提交</p>
 
-    <img id="capture_face" src="" alt="capture face">
+          <!-- DataTales Example -->
+          <div class="card shadow mb-4">
+            <div class="card-header py-3">
+              <h6 class="m-0 font-weight-bold text-primary">信息编辑</h6>
+            </div>
+            <div class="card-body">
+              <div class="table-responsive">
+                    <form method="post">
+                        <div class="form-group">
+                            <p>用户名</p>
+                            <input type="text" class="form-control form-control-user"name="name" value={{ user_data.username }}>
+                        </div>
+                        <div class="form-group">
+                            <p>密码</p>
+                            <input type="text" class="form-control form-control-user" name="password" value={{ user_data.password }}>
+                        </div>
+                        <div class="form-group">
+                            <p>邮箱</p>
+                            <input type="text" class="form-control form-control-user" name="email" value={{ user_data.email }}>
+                        </div>
+                        <div class="form-group">
+                            <p>电话</p>
+                            <input type="text" class="form-control form-control-user" name="phone" value={{ user_data.phone }}>
+                        </div>
+                        <div class="form-group">
+                            <p>员工类型</p>
+                            <input type="text" class="form-control form-control-user" name="type" value={{ user_data.type }}>
+                        </div>
+
+                        <input type="submit" class="btn btn-primary btn-icon-split" value="  提交修改  ">
+                    </form>
+              </div>
+            </div>
           </div>
-      
-        
-    <!-- Footer -->
+
+        </div>
+        <!-- /.container-fluid -->
+
+      </div>
+      <!-- End of Main Content -->
+
+      <!-- Footer -->
       <footer class="sticky-footer bg-white">
         <div class="container my-auto">
           <div class="copyright text-center my-auto">
@@ -310,6 +330,10 @@
   <!-- Page level custom scripts -->
   <script src="../static/js/demo/chart-area-demo.js"></script>
   <script src="../static/js/demo/chart-pie-demo.js"></script>
- 
+
+
+
+  </div>
+
 </body>
 </html>

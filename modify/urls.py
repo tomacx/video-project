@@ -7,5 +7,7 @@ urlpatterns = [
     path('delete',views.delete),
     path('edit',views.edit),
     path('userinfo',views.userinfo),
-    path('index',views.index)
+    path('userinfo_worker', views.userinfo_worker, name='userinfo_worker'),
+    path('index',views.index),
+    path('index_worker',views.index_worker)
 ]

@@ -93,7 +93,10 @@ def send_sms(phone_numbers, template_param=None):
 
     return sms_response
 
-
-if __name__ == "__main__":
+def send_message():
     result = send_sms("13758730496")
     print(str(result, encoding='utf-8'))
+
+#if __name__ == "__main__":
+#    result = send_sms("13758730496")
+#    print(str(result, encoding='utf-8'))

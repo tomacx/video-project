@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
+    <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <meta name="description" content="">
@@ -25,7 +25,7 @@
     <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
 
       <!-- Sidebar - Brand -->
-      <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
+      <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index_worker.html">
         <div class="sidebar-brand-icon rotate-n-15">
           <i class="fas fa-laugh-wink"></i>
         </div>
@@ -37,7 +37,7 @@
 
       <!-- Nav Item - Dashboard -->
       <li class="nav-item active">
-        <a class="nav-link" href="index.html">
+        <a class="nav-link" href="index_worker">
           <i class="fas fa-fw fa-tachometer-alt"></i>
           <span>首页</span></a>
       </li>
@@ -54,13 +54,13 @@
       <li class="nav-item">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
           <i class="fas fa-fw fa-cog"></i>
-          <span>人员管理</span>
+          <span>个人信息</span>
         </a>
         <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
           <div class="bg-white py-2 collapse-inner rounded">
             <h6 class="collapse-header">选项</h6>
-            <a class="collapse-item" href="userinfo">员工信息</a>
-            <a class="collapse-item" href="show_face">人脸信息</a>
+            <a class="collapse-item" href="userinfo">查看个人信息</a>
+            <a class="collapse-item" href="show_face">修改个人信息</a>
           </div>
         </div>
       </li>
@@ -74,47 +74,29 @@
         <div id="collapseUtilities" class="collapse" aria-labelledby="headingUtilities" data-parent="#accordionSidebar">
           <div class="bg-white py-2 collapse-inner rounded">
             <h6 class="collapse-header">选项</h6>
-            <a class="collapse-item" href="capture_face_start">人脸录入</a>
-            <a class="collapse-item" href="recognize_face_start">人脸识别</a>
-
+            <a class="collapse-item" href="capture_face_start_worker">人脸录入</a>
+            <a class="collapse-item" href="recognize_face_start_worker">人脸识别</a>
           </div>
         </div>
       </li>
-
-      <li class="nav-item">
-        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePages" aria-expanded="true" aria-controls="collapsePages">
-          <i class="fas fa-fw fa-folder"></i>
-          <span>实时监测</span>
-        </a>
-        <div id="collapsePages" class="collapse" aria-labelledby="headingPages" data-parent="#accordionSidebar">
-          <div class="bg-white py-2 collapse-inner rounded">
-              <h6 class="collapse-header">选项</h6>
-              <a class="collapse-item" href="regional">区域监测</a>
-              <a class="collapse-item" href="detect_object_start">目标追踪</a>
-              <a class="collapse-item" href="detect_act_start">异常行为监测</a>
-              <a class="collapse-item" href="detect_knife_start">物品监测</a>
-              <a class="collapse-item" href="detect_fire_start">火灾监测</a>
-          </div>
-        </div>
-      </li>
-
+        
       <!-- Divider -->
       <hr class="sidebar-divider">
 
       <!-- Heading -->
-
+      
 
       <!-- Nav Item - Pages Collapse Menu -->
-
+        
         <!-- 上面那段拿来借用啦~>
       <！-- Nav Item - Charts -->
-
+      
 
       <!-- Nav Item - Tables -->
-
+     
 
       <!-- Divider -->
-
+      
 
       <!-- Sidebar Toggler (Sidebar) -->
       <div class="text-center d-none d-md-inline">
@@ -231,8 +213,7 @@
             document.getElementById('capture_face').src = imageUrl;
         }
     </script>
-
-    <div class="container-fluid">
+<div class="container-fluid">
     <h1>人脸录入</h1>
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
     <form onsubmit="updateImage(); return false;">
@@ -251,9 +232,7 @@
     </script>
 
     <img id="capture_face" src="" alt="capture face">
-          </div>
-      
-        
+</div>
     <!-- Footer -->
       <footer class="sticky-footer bg-white">
         <div class="container my-auto">
@@ -293,7 +272,7 @@
       </div>
     </div>
   </div>
-
+      
   <!-- Bootstrap core JavaScript-->
   <script src="../static/vendor/jquery/jquery.min.js"></script>
   <script src="../static/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
@@ -310,6 +289,5 @@
   <!-- Page level custom scripts -->
   <script src="../static/js/demo/chart-area-demo.js"></script>
   <script src="../static/js/demo/chart-pie-demo.js"></script>
- 
 </body>
 </html>

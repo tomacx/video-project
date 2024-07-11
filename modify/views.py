@@ -4,6 +4,7 @@ from django.shortcuts import render, redirect
 
 import modify
 import userLogin
+from faceRecog.models import Face
 from modify.models import User
 from userLogin.models import User
 
@@ -24,6 +25,18 @@ def userinfo(request):
         user_list = modify.models.User.objects.filter(username=username)
 
     return render(request, "userinfo.html", {"user_list": user_list})##将数据导入html模板中，进行数据渲染。
+
+def userinfo_worker(request):
+    username = request.session['USERNAME']
+
+    user_list = User.objects.get(username=username)
+    face_list = Face.objects.get(username=username)
+
+    context = {"user_list": user_list, "face_list": face_list}
+
+    return render(request, "userinfo_worker.html", context)  ##将数据导入html模板中，进行数据渲染。
+
+
 def add(request):
     if request.method == 'GET':
         return render(request,'add.html')
@@ -64,3 +77,5 @@ def edit(request):
 def index(request):
     return render(request, "index.html")
 
+def index_worker(request):
+    return render(request,"index_worker.html")

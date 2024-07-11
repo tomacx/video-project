@@ -1,3 +1,6 @@
+import threading
+import time
+import sendMessage
 import cv2
 from django.http import StreamingHttpResponse
 from django.shortcuts import render, redirect
@@ -39,6 +42,34 @@ from yolov5.utils.general import (
 )
 from yolov5.utils.torch_utils import select_device, smart_inference_mode
 
+thread_save = False
+global number
+def save(cam, name):
+    print("in save")
+    frame_width = int(cam.get(3))
+    frame_height = int(cam.get(4))
+
+    duration = 10
+    t = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
+    out = cv2.VideoWriter(f'yolov5/waring/{ name }-{ t }.avi', cv2.VideoWriter_fourcc('M', 'J', 'P', 'G'), 10, (frame_width, frame_height))
+
+    start_time = time.time()
+    while True:
+        ret, frame = cam.read()
+        if ret:
+            out.write(frame)
+            if time.time() - start_time > duration:
+                break
+        else:
+            break
+    out.release()
+
+def save_video_thread(cam, name):
+    global thread_save
+    thread_save = True
+    save(cam, name)
+    thread_save = False
+
 def generate_frames(
     weights=ROOT / "yolov5s.pt",  # model path or triton URL
     source=ROOT / "data/images",  # file/dir/URL/glob/screen/0(webcam)
@@ -70,6 +101,7 @@ def generate_frames(
     vid_stride=1,  # video frame-rate stride
     person_num=[0],# 视频中人数
 ):
+    number = 0
     source = str(source)
     save_img = not nosave and not source.endswith(".txt")  # save inference images
     is_file = Path(source).suffix[1:] in (IMG_FORMATS + VID_FORMATS)
@@ -166,16 +198,40 @@ def generate_frames(
             if len(det):
                 # Rescale boxes from img_size to im0 size
                 det[:, :4] = scale_boxes(im.shape[2:], det[:, :4], im0.shape).round()
-                person_num[0] = 1
+                person_num = 0
+                knife_num = 0
+                fire_num = 0
+                fall_num = 0
                 # Write results
                 for *xyxy, conf, cls in reversed(det):
                     c = int(cls)  # integer class
                     if names[c] == 'person':
-                        person_num[0] += 1
+                        person_num += 1
+
 
                     label = names[c] if hide_conf else f"{names[c]}"
                     confidence = float(conf)
                     confidence_str = f"{confidence:.2f}"
+
+                    if names[c] == 'knife' and number==0:
+                        cam = cv2.VideoCapture(source)
+                        threading.Thread(target=save_video_thread,args=(cam, names[c])).start()
+                        number = number + 1
+                        knife_num += 1
+                        sendMessage.send_message()
+                        # TODO 加入信息报警
+                    if names[c] == 'fire':
+                        cam = cv2.VideoCapture(source)
+                        threading.Thread(target=save_video_thread, args=(cam, names[c])).start()
+                        number = number + 1
+                        fire_num += 1
+                        # TODO 加入报警
+                    if names[c] == 'falldown':
+                        cam = cv2.VideoCapture(source)
+                        threading.Thread(target=save_video_thread, args=(cam, names[c])).start()
+                        number = number + 1
+                        fall_num += 1
+                        # TODO 报警功能
 
                     if save_csv:
                         write_to_csv(p.name, label, confidence_str)
@@ -193,10 +249,26 @@ def generate_frames(
                     if save_crop:
                         save_one_box(xyxy, imc, file=save_dir / "crops" / names[c] / f"{p.stem}.jpg", BGR=True)
 
-                text = f'person: {person_num[0]}'
-                text_size, _ = cv2.getTextSize(text, cv2.FONT_HERSHEY_SIMPLEX, 1, 2)
-                cv2.putText(im0, text, (640 - text_size[0] - 10, 50), cv2.FONT_HERSHEY_SIMPLEX, 1,
-                            (0, 255, 0), 2)
+                if person_num > 0:
+                    text = f'person: {person_num}'
+                    text_size, _ = cv2.getTextSize(text, cv2.FONT_HERSHEY_SIMPLEX, 1, 2)
+                    cv2.putText(im0, text, (640 - text_size[0] - 10, 50), cv2.FONT_HERSHEY_SIMPLEX, 1,
+                                (0, 255, 0), 2)
+                if knife_num > 0:
+                    text = f'waring! knife: {knife_num}'
+                    text_size, _ = cv2.getTextSize(text, cv2.FONT_HERSHEY_SIMPLEX, 1, 2)
+                    cv2.putText(im0, text, (640 - text_size[0] - 10, 50), cv2.FONT_HERSHEY_SIMPLEX, 1,
+                                (0, 255, 0), 2)
+                if fire_num > 0:
+                    text = f'waring! fire: {fire_num}'
+                    text_size, _ = cv2.getTextSize(text, cv2.FONT_HERSHEY_SIMPLEX, 1, 2)
+                    cv2.putText(im0, text, (640 - text_size[0] - 10, 50), cv2.FONT_HERSHEY_SIMPLEX, 1,
+                                (0, 255, 0), 2)
+                if fall_num > 0:
+                    text = f'waring! someone fall: {fall_num}'
+                    text_size, _ = cv2.getTextSize(text, cv2.FONT_HERSHEY_SIMPLEX, 1, 2)
+                    cv2.putText(im0, text, (640 - text_size[0] - 10, 50), cv2.FONT_HERSHEY_SIMPLEX, 1,
+                                (0, 255, 0), 2)
 
             # Stream results
             im0 = annotator.result()

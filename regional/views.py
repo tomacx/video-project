@@ -5,6 +5,7 @@ import csv
 import os
 import platform
 import sys
+import threading
 from pathlib import Path
 import torch
 import numpy as np
@@ -18,6 +19,7 @@ import cv2
 import json
 from regional import detect
 from regional.detect import parse_opt
+from yolov5.views import save_video_thread
 
 FILE = Path(__file__).resolve()
 ROOT = FILE.parents[0]  # YOLOv5 root directory
@@ -46,6 +48,8 @@ from regional.utils.general import (
     xyxy2xywh,
 )
 from regional.utils.torch_utils import select_device, smart_inference_mode
+
+thread_save = False
 
 # Create your views here.
 def regional(request):
@@ -272,6 +276,10 @@ def generate_frames(
                 cv2.putText(im0, text, (640 - text_size[0] - 10, 50), cv2.FONT_HERSHEY_SIMPLEX, 1,
                             (0, 255, 0), 2)
                 print(person_num)
+                if person_num > 0:
+                    cam = cv2.VideoCapture(source)
+                    threading.Thread(target=save_video_thread, args=(cam, names[c])).start()
+
             # Stream results
             im0 = annotator.result()
             if view_img:
