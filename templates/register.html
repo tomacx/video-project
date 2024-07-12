@@ -59,6 +59,13 @@
                         <input type="radio" name="type" value="管理员" checked="checked"><span>管理员</span>
                         <input type="radio" name="type" value="场务人员"><span>场务人员</span>
                     </span>
+                  <div class="form-group">
+                         <a href="#" class="captcha">
+                            <img src="{{ captcha.image_url }}" alt="点击切换" id="id_captcha" >
+                         </a> <br>
+                          <input type="text" name="captcha" placeholder="验证码"> <br>
+                          <input value="{{ captcha.hashkey }}" name="hashkey" type="hidden" id="id_captcha_0">
+                  </div>
                 <hr> 
                   <input type="submit" class="btn btn-google btn-user btn-block" value="注册">
                 <hr>

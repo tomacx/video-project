@@ -1,7 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="utf-8">
+
+  <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <meta name="description" content="">
@@ -15,6 +17,8 @@
 
   <!-- Custom styles for this template-->
   <link href="../static/css/sb-admin-2.min.css" rel="stylesheet">
+
+
 </head>
 <body id="page-top">
 
@@ -202,14 +206,53 @@
 
         </nav>
         <!-- End of Topbar -->
-          <div class="container-fluid">
-    <div class="d-sm-flex align-items-center justify-content-between mb-4">
-            <h1 class="h3 mb-0 text-gray-800">人脸识别</h1>
+
+
+        <!-- Begin Page Content -->
+        <div class="container-fluid">
+
+          <!-- Page Heading -->
+          <h1 class="h3 mb-2 text-gray-800">人员管理</h1>
+          <p class="mb-4">在此处输入需要修改的信息并提交</p>
+
+          <!-- DataTales Example -->
+          <div class="card shadow mb-4">
+            <div class="card-header py-3">
+              <h6 class="m-0 font-weight-bold text-primary">信息编辑</h6>
+            </div>
+            <div class="card-body">
+              <div class="table-responsive">
+                    <form method="post">
+                        <div class="form-group">
+                            <p>用户名</p>
+                            <input type="text" class="form-control form-control-user"name="name" value={{ user_data.username }}>
+                        </div>
+                        <div class="form-group">
+                            <p>密码</p>
+                            <input type="text" class="form-control form-control-user" name="password" value={{ user_data.password }}>
+                        </div>
+                        <div class="form-group">
+                            <p>邮箱</p>
+                            <input type="text" class="form-control form-control-user" name="email" value={{ user_data.email }}>
+                        </div>
+                        <div class="form-group">
+                            <p>电话</p>
+                            <input type="text" class="form-control form-control-user" name="phone" value={{ user_data.phone }}>
+                        </div>
+
+                        <input type="submit" class="btn btn-primary btn-icon-split" value="  提交修改  ">
+                    </form>
+              </div>
+            </div>
           </div>
-    <img id="capture_face" src="{% url 'recognize_face' %}" alt="capture face">
-          </div>
+
+        </div>
+        <!-- /.container-fluid -->
+
       </div>
-<!-- Footer -->
+      <!-- End of Main Content -->
+
+      <!-- Footer -->
       <footer class="sticky-footer bg-white">
         <div class="container my-auto">
           <div class="copyright text-center my-auto">
@@ -265,6 +308,10 @@
   <!-- Page level custom scripts -->
   <script src="../static/js/demo/chart-area-demo.js"></script>
   <script src="../static/js/demo/chart-pie-demo.js"></script>
+
+
+
   </div>
+
 </body>
 </html>

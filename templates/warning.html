@@ -18,8 +18,32 @@
   <!-- Custom styles for this template-->
   <link href="../static/css/sb-admin-2.min.css" rel="stylesheet">
 
-
+    <style>
+        .modal {
+    display: none; /* 初始时隐藏弹窗 */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7); /* 半透明黑色背景 */
+    z-index: 1000; /* 放在最顶层 */
+  }
+  .modal-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 60%; /* 调整弹窗宽度 */
+    height: auto; /* 自适应高度 */
+    background-color: #fff;
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    text-align: center;
+  }
+    </style>
 </head>
+
 <body id="page-top">
 
   <!-- Page Wrapper -->
@@ -64,7 +88,7 @@
           <div class="bg-white py-2 collapse-inner rounded">
             <h6 class="collapse-header">选项</h6>
             <a class="collapse-item" href="userinfo">员工信息</a>
-            <a class="collapse-item" href="cards.html">人脸信息</a>
+            <a class="collapse-item" href="show_face">人脸信息</a>
           </div>
         </div>
       </li>
@@ -80,11 +104,11 @@
             <h6 class="collapse-header">选项</h6>
             <a class="collapse-item" href="capture_face_start">人脸录入</a>
             <a class="collapse-item" href="recognize_face_start">人脸识别</a>
-            
+
           </div>
         </div>
       </li>
-        
+
       <li class="nav-item">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePages" aria-expanded="true" aria-controls="collapsePages">
           <i class="fas fa-fw fa-folder"></i>
@@ -98,27 +122,29 @@
               <a class="collapse-item" href="detect_act_start">异常行为监测</a>
               <a class="collapse-item" href="detect_knife_start">物品监测</a>
               <a class="collapse-item" href="detect_fire_start">火灾监测</a>
+              <a class="collapse-item" href="http://172.20.10.13:8080/">多摄像头追踪</a>
+              <a class="collapse-item" href="warning">告警中心</a>
           </div>
         </div>
-      </li>  
-        
+      </li>
+
       <!-- Divider -->
       <hr class="sidebar-divider">
 
       <!-- Heading -->
-      
+
 
       <!-- Nav Item - Pages Collapse Menu -->
-        
+
         <!-- 上面那段拿来借用啦~>
       <！-- Nav Item - Charts -->
-      
+
 
       <!-- Nav Item - Tables -->
-     
+
 
       <!-- Divider -->
-      
+
 
       <!-- Sidebar Toggler (Sidebar) -->
       <div class="text-center d-none d-md-inline">
@@ -225,56 +251,82 @@
         </nav>
         <!-- End of Topbar -->
 
-
         <!-- Begin Page Content -->
         <div class="container-fluid">
+        <div id="myModal" class="modal">
+<div id="myModal" class="modal">
+  <div class="modal-content">
+    <span onclick="closeModal()" style="float: right; cursor: pointer;">&times;</span>
+    <video id="videoPlayer" width="100%" controls>
+      <source id="videoSource" src="{{ video_url }}" type="video/mp4">
+      Your browser does not support HTML5 video.
+    </video>
+  </div>
+</div>
+</div>
+            <div class="table-responsive">
+                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>序号</th>
+                            <th>事件名称</th>
+                            <th>发生时间</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for warning in warning_list %}
+                        <tr>
+                            <td>{{ warning.id }}</td>
+                            <td>{{ warning.warningname}}</td>
+                            <td>{{ warning.warningtime}}</td>
+                            <td>
+                                <form id="myForm" action="{% url 'play_video' %}" method="post">
+                                  <button type="submit" onclick="openModal()">播放</button>
+                                </form>
+                                
+                                <a href="/delete_warning?id={{ warning.id }}">删除</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                  </tbody>
 
-          <!-- Page Heading -->
-          <h1 class="h3 mb-2 text-gray-800">人员管理</h1>
-          <p class="mb-4">在此处输入需要修改的信息并提交</p>
+                </table>
+            <script>
+              function openModal() {
+                  var modal = document.getElementById("myModal");
+                  modal.style.display = "block";
+  
+                  // 获取后端传递的视频URL
+                  var videoUrl = "{{ play_video }}"; // 这里的  将由 Django 后端动态生成
+                  var videoSource = document.getElementById("videoSource");
+                  videoSource.src = videoUrl;
+                  
+                  var videoPlayer = document.getElementById("videoPlayer");
+                  videoPlayer.load();
+                  videoPlayer.play();
+              }
 
-          <!-- DataTales Example -->
-          <div class="card shadow mb-4">
-            <div class="card-header py-3">
-              <h6 class="m-0 font-weight-bold text-primary">信息编辑</h6>
-            </div>
-            <div class="card-body">
-              <div class="table-responsive">
-                    <form method="post">
-                        <div class="form-group">
-                            <p>用户名</p>
-                            <input type="text" class="form-control form-control-user"name="name" value={{ user_data.username }}>
-                        </div>
-                        <div class="form-group">
-                            <p>密码</p>
-                            <input type="text" class="form-control form-control-user" name="password" value={{ user_data.password }}>
-                        </div>
-                        <div class="form-group">
-                            <p>邮箱</p>
-                            <input type="text" class="form-control form-control-user" name="email" value={{ user_data.email }}>
-                        </div>
-                        <div class="form-group">
-                            <p>电话</p>
-                            <input type="text" class="form-control form-control-user" name="phone" value={{ user_data.phone }}>
-                        </div>
-                        <div class="form-group">
-                            <p>员工类型</p>
-                            <input type="text" class="form-control form-control-user" name="type" value={{ user_data.type }}>
-                        </div>
-
-                        <input type="submit" class="btn btn-primary btn-icon-split" value="  提交修改  ">
-                    </form>
+                function closeModal() {
+                  var modal = document.getElementById("myModal");
+                  modal.style.display = "none";
+                  
+                  var videoPlayer = document.getElementById("videoPlayer");
+                  videoPlayer.pause();
+                }
+            </script>
               </div>
-            </div>
           </div>
 
-        </div>
-        <!-- /.container-fluid -->
-
-      </div>
       <!-- End of Main Content -->
 
-      <!-- Footer -->
+    </div>
+    <!-- End of Content Wrapper -->
+
+  </div>
+  <!-- End of Page Wrapper -->
+  </div>
+        <!-- Footer -->
       <footer class="sticky-footer bg-white">
         <div class="container my-auto">
           <div class="copyright text-center my-auto">
@@ -283,12 +335,6 @@
         </div>
       </footer>
       <!-- End of Footer -->
-
-    </div>
-    <!-- End of Content Wrapper -->
-
-  </div>
-  <!-- End of Page Wrapper -->
 
   <!-- Scroll to Top Button-->
   <a class="scroll-to-top rounded" href="#page-top">
@@ -330,10 +376,8 @@
   <!-- Page level custom scripts -->
   <script src="../static/js/demo/chart-area-demo.js"></script>
   <script src="../static/js/demo/chart-pie-demo.js"></script>
-
-
-
-  </div>
+    </div>
 
 </body>
+
 </html>

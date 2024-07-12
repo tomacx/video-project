@@ -6,6 +6,7 @@ import os
 import platform
 import sys
 import threading
+import time
 from pathlib import Path
 import torch
 import numpy as np
@@ -51,6 +52,8 @@ from regional.utils.torch_utils import select_device, smart_inference_mode
 
 thread_save = False
 
+global number
+global times
 # Create your views here.
 def regional(request):
 
@@ -107,7 +110,8 @@ def generate_frames(
     person_num=[0],# 视频中人数
     point=[] # 目前的坐标点
 ):
-
+    number = 0
+    times = 0
     source = str(source)
     save_img = not nosave and not source.endswith(".txt")  # save inference images
     is_file = Path(source).suffix[1:] in (IMG_FORMATS + VID_FORMATS)
@@ -249,6 +253,7 @@ def generate_frames(
                     c = int(cls)  # integer class
                     if names[c] == 'person':
                         person_num += 1
+                        print(time.localtime)
 
                     label = names[c] if hide_conf else f"{names[c]}"
                     confidence = float(conf)

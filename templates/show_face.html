@@ -29,7 +29,7 @@
     <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
 
       <!-- Sidebar - Brand -->
-      <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
+      <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index">
         <div class="sidebar-brand-icon rotate-n-15">
           <i class="fas fa-laugh-wink"></i>
         </div>
@@ -41,7 +41,7 @@
 
       <!-- Nav Item - Dashboard -->
       <li class="nav-item active">
-        <a class="nav-link" href="index.html">
+        <a class="nav-link" href="index">
           <i class="fas fa-fw fa-tachometer-alt"></i>
           <span>首页</span></a>
       </li>
@@ -98,6 +98,8 @@
               <a class="collapse-item" href="detect_act_start">异常行为监测</a>
               <a class="collapse-item" href="detect_knife_start">物品监测</a>
               <a class="collapse-item" href="detect_fire_start">火灾监测</a>
+              <a class="collapse-item" href="http://172.20.10.13:8080/">多摄像头追踪</a>
+              <a class="collapse-item" href="warning">告警中心</a>
           </div>
         </div>
       </li>
@@ -136,7 +138,7 @@
 
         <!-- Topbar -->
         <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
-            <h1>用户人脸信息</h1>
+
           <!-- Sidebar Toggle (Topbar) -->
           <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
             <i class="fa fa-bars"></i>
@@ -229,6 +231,7 @@
         <!-- Begin Page Content -->
         <div class="container-fluid">
             <!-- Topbar Search -->
+        <div class="card-header py-3">
           <form class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search" method="post" action="{% url 'show_face_search' %}">
             <div class="input-group">
               <input type="text" class="mr-2 d-none d-lg-inline text-gray-600 small" placeholder="输入用户名查询" aria-label="Search" aria-describedby="basic-addon2" name="username">
@@ -237,7 +240,7 @@
               </div>
             </div>
           </form>
-
+        </div>
         <ul>
             {% for face in face_list %}
             <div class="card shadow mb-4">
@@ -281,25 +284,24 @@
     <i class="fas fa-angle-up"></i>
   </a>
 
-  <!-- Logout Modal-->
+ <!-- Logout Modal-->
   <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel">Ready to Leave?</h5>
+          <h5 class="modal-title" id="exampleModalLabel">确定退出？</h5>
           <button class="close" type="button" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">×</span>
           </button>
         </div>
-        <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
+        <div class="modal-body">选择"登出"按钮，如果你确认要离开。</div>
         <div class="modal-footer">
-          <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
-          <a class="btn btn-primary" href="login.html">Logout</a>
+          <button class="btn btn-secondary" type="button" data-dismiss="modal">取消</button>
+          <a class="btn btn-primary" href="login">登出</a>
         </div>
       </div>
     </div>
   </div>
-
     <!-- Bootstrap core JavaScript-->
   <script src="../static/vendor/jquery/jquery.min.js"></script>
   <script src="../static/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>

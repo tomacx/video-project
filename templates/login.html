@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 
@@ -17,6 +18,9 @@
 
   <!-- Custom styles for this template-->
   <link href="../static/css/sb-admin-2.min.css" rel="stylesheet">
+  <script src="../static/vendor/jquery/jquery.min.js"></script>
+  <script src="../static/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
 
 </head>
 
@@ -40,12 +44,27 @@
                     <h1 class="h4 text-gray-900 mb-4">欢迎登陆！</h1>
                   </div>
                   <form class="user" action="login" method="post">
+                      {% if form.captcha.errors %}
+                        <div class="alert alert-warning">{{ form.captcha.errors }}</div>
+                      {% elif message %}
+                        <div class="alert alert-warning">{{ message }}</div>
+                      {% endif %}
+
                     <div class="form-group">
                       <input type="username" class="form-control form-control-user" name="username" aria-describedby="emailHelp" placeholder="输入用户名...">
                     </div>
                     <div class="form-group">
                       <input type="password" class="form-control form-control-user" name="password" placeholder="密码">
                     </div>
+                  
+                      <div class="form-group">
+                         <a href="#" class="captcha">
+                            <img src="{{ captcha.image_url }}" alt="点击切换" id="id_captcha" >
+                         </a> <br>
+                          <input type="text" name="captcha" placeholder="验证码"> <br>
+                          <input value="{{ captcha.hashkey }}" name="hashkey" type="hidden" id="id_captcha_0">
+                     </div>
+                  
                     <div class="form-group">
                       <div class="custom-control custom-checkbox small">
                         <input type="checkbox" class="custom-control-input" id="customCheck">
@@ -82,6 +101,19 @@
 
   <!-- Custom scripts for all pages-->
   <script src="../static/js/sb-admin-2.min.js"></script>
+    
+  
+  <script>
+        <!-- 动态刷新验证码js -->
+        $(document).ready(function(){
+            $('.captcha').click(function () {
+                $.getJSON("refresh_captcha/", function (result) {
+                    $('#id_captcha').attr('src', result['image_url']);
+                    $('#id_captcha_0').val(result['hashkey'])
+                });
+            });
+        });
+    </script>
 
 </body>
 

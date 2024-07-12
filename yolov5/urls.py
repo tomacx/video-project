@@ -10,4 +10,7 @@ urlpatterns = [
     path('detect_knife_start', views.detect_knife_start,name='detect_knife_start'),
     path('detect_fire', views.detect_fire, name='detect_fire'),
     path('detect_fire_start', views.detect_fire_start, name='detect_fire_start'),
+    path('warning',views.warning,name='warning'),
+    path('delete_warning',views.delete_warning,name='delete_warning'),
+    path('play_video',views.play_video,name='play_video')
 ]

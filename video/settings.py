@@ -42,9 +42,23 @@ INSTALLED_APPS = [
     'regional',
     'testHTML',
     'faceRecog',
+    'captcha',
     'yolov5'
     #这里添加应用
 ]
+
+#验证码
+CAPTCHA_IMAGE_SIZE = (80,30)
+CAPTCHA_LENGTH = 4
+CAPTCHA_TIMEOUT = 1
+
+CAPTCHA_OUTPUT_FORMAT = '%(image)s %(text_field)s %(hidden_field)s '
+CAPTCHA_NOISE_FUNCTIONS = ('captcha.helpers.noise_null',
+     'captcha.helpers.noise_arcs', # 线
+     'captcha.helpers.noise_dots', # 点
+)
+CAPTCHA_CHALLENGE_FUNCT = 'captcha.helpers.random_char_challenge'
+CAPTCHA_CHALLENGE_FUNCT = 'captcha.helpers.math_challenge'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -158,3 +172,14 @@ MEDIA_ROOT = os.path.join(BASE_DIR, '')
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# CACHES = {
+#     "default": {
+#         "BACKEND": "django_redis.cache.RedisCache",
+#         "LOCATION": "redis://127.0.0.1:6379/1",
+#         "OPTIONS": {
+#             "CLIENT_CLASS": "django_redis.client.DefaultClient"
+#         }
+#     }
+#
+# }

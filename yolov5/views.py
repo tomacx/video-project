@@ -42,6 +42,8 @@ from yolov5.utils.general import (
 )
 from yolov5.utils.torch_utils import select_device, smart_inference_mode
 
+from userLogin.models import warn
+
 thread_save = False
 global number
 def save(cam, name):
@@ -51,6 +53,7 @@ def save(cam, name):
 
     duration = 10
     t = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
+    print(t)
     out = cv2.VideoWriter(f'yolov5/waring/{ name }-{ t }.avi', cv2.VideoWriter_fourcc('M', 'J', 'P', 'G'), 10, (frame_width, frame_height))
 
     start_time = time.time()
@@ -213,25 +216,29 @@ def generate_frames(
                     confidence = float(conf)
                     confidence_str = f"{confidence:.2f}"
 
-                    if names[c] == 'knife' and number==0:
+                    if names[c] == 'knife':
                         cam = cv2.VideoCapture(source)
                         threading.Thread(target=save_video_thread,args=(cam, names[c])).start()
-                        number = number + 1
                         knife_num += 1
-                        sendMessage.send_message()
-                        # TODO 加入信息报警
+                        if number==0:
+                            number = number+1
+                            sendMessage.send_message() #发现危险物品报警
+
                     if names[c] == 'fire':
                         cam = cv2.VideoCapture(source)
                         threading.Thread(target=save_video_thread, args=(cam, names[c])).start()
-                        number = number + 1
                         fire_num += 1
-                        # TODO 加入报警
+                        if number==0:
+                            number = number + 1
+                            sendMessage.send_message() # 发现火焰报警
+
                     if names[c] == 'falldown':
                         cam = cv2.VideoCapture(source)
                         threading.Thread(target=save_video_thread, args=(cam, names[c])).start()
-                        number = number + 1
                         fall_num += 1
-                        # TODO 报警功能
+                        if number==0:
+                            number = number + 1
+                            sendMessage.send_message() # 发现有人摔倒报警
 
                     if save_csv:
                         write_to_csv(p.name, label, confidence_str)
@@ -316,3 +323,29 @@ def detect_fire(request):
 
 def detect_fire_start(request):
    return render(request, 'detect_fire.html')
+
+def warning(request):
+    warning_list = warn.objects.all()
+    return render(request,'warning.html',{'warning_list':warning_list})
+
+def delete_warning(request):
+    warn_id = request.GET.get('id')  # 根据用户名删除用户
+    warn_path = warn.objects.get(id=warn_id).savepath
+    warn.objects.filter(id=warn_id).delete()
+    
+    path = "D:/summerProject2024/video/" + str(warn_path)
+
+    print(path)
+    return redirect("/warning")  # 删除之后回到/userinfo/界面
+
+def play_video(request):
+
+    warn_id = request.GET.get('id')  # 根据用户名删除用户
+    warn_path = warn.objects.get(id=warn_id).savepath
+    warning_list = warn.objects.all()
+
+    context = {
+        # { 'warning_list': warning_list },
+        { 'video_url': warn_path }
+    }
+    return render(request, 'warning.html', context)

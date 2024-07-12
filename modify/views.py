@@ -1,5 +1,6 @@
 import hashlib
 
+from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
 
 import modify
@@ -10,6 +11,10 @@ from userLogin.models import User
 
 # Create your views here.
 from django.shortcuts import render,HttpResponse,redirect
+
+from userLogin.views import check_token
+
+
 def take_md5(content):
     content_bytes = content.encode('utf-8') #将字符串转为字节对象
     hash = hashlib.md5()    #创建hash加密实例
@@ -17,14 +22,19 @@ def take_md5(content):
     result = hash.hexdigest()  #得到加密结果
     return result[:16]
 def userinfo(request):
-    username = request.POST.get('username', '')
-    print(username)
-    if len(username) == 0:
-        user_list = modify.models.User.objects.all()
-    else:
-        user_list = modify.models.User.objects.filter(username=username)
+    token = request.session['TOKEN']
+    print(token)
+    if check_token(token):
+        username = request.POST.get('username', '')
+        print(username)
+        if len(username) == 0:
+            user_list = modify.models.User.objects.all()
+        else:
+            user_list = modify.models.User.objects.filter(username=username)
 
-    return render(request, "userinfo.html", {"user_list": user_list})##将数据导入html模板中，进行数据渲染。
+        return render(request, "userinfo.html", {"user_list": user_list})##将数据导入html模板中，进行数据渲染。
+
+    return HttpResponseRedirect('/login')
 
 def userinfo_worker(request):
     username = request.session['USERNAME']
@@ -73,6 +83,23 @@ def edit(request):
     modify.models.User.objects.filter(username=username).update(password=password, phone=phone, email=email, type=type)
     userLogin.models.User.objects.filter(username=username).update(password=password, phone=phone, email=email, type=type)
     return redirect("/userinfo")
+
+def edit_worker(request):
+    username = request.session['USERNAME']
+    user_data = User.objects.get(username=username)
+    if request.method == 'GET':
+        return render(request, "edit_worker.html", {"user_data": user_data})
+
+    password = request.POST.get('password')
+    password = take_md5(password)
+    phone = request.POST.get('phone')
+    email = request.POST.get('email')
+    type = request.POST.get('type')
+    modify.models.User.objects.filter(username=username).update(password=password, phone=phone, email=email, type=type)
+    userLogin.models.User.objects.filter(username=username).update(password=password, phone=phone, email=email,
+                                                                   type=type)
+    return render(request, "login.html", {"user_data": user_data})
+
 
 def index(request):
     return render(request, "index.html")
