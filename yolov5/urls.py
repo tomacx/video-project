@@ -12,5 +12,6 @@ urlpatterns = [
     path('detect_fire_start', views.detect_fire_start, name='detect_fire_start'),
     path('warning',views.warning,name='warning'),
     path('delete_warning',views.delete_warning,name='delete_warning'),
-    path('play_video',views.play_video,name='play_video')
+    path('get_toggle_status',views.get_toggle_status,name='get_toggle_status'),
+    path('update_toggle_status',views.update_toggle_status,name='get_toggle_status')
 ]

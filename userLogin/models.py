@@ -13,3 +13,4 @@ class warn(models.Model):
     warningname = models.CharField(max_length=20)
     warningtime = models.CharField(max_length=50)
     savepath = models.ImageField(upload_to='D:/summerProject2024/video/yolov5/warning')
+    done = models.IntegerField(default=0)

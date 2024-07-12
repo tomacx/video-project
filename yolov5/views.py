@@ -2,7 +2,7 @@ import threading
 import time
 import sendMessage
 import cv2
-from django.http import StreamingHttpResponse
+from django.http import StreamingHttpResponse, JsonResponse, HttpResponse,HttpRequest
 from django.shortcuts import render, redirect
 import argparse
 import csv
@@ -46,15 +46,23 @@ from userLogin.models import warn
 
 thread_save = False
 global number
+
+
 def save(cam, name):
     print("in save")
     frame_width = int(cam.get(3))
     frame_height = int(cam.get(4))
 
     duration = 10
-    t = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
+    t = time.strftime('%Y-%m-%d_%H-%M-%S', time.localtime())
     print(t)
-    out = cv2.VideoWriter(f'yolov5/waring/{ name }-{ t }.avi', cv2.VideoWriter_fourcc('M', 'J', 'P', 'G'), 10, (frame_width, frame_height))
+    print(f'yolov5/warning/{name}-{t}.mp4')
+
+    #设置编码器的格式为 H264-MPEG-4 AVC
+    fourcc = cv2.VideoWriter_fourcc(*'avc1')
+    out = cv2.VideoWriter(f'yolov5/warning/{name}-{t}.mp4', fourcc, 10, (frame_width, frame_height))
+    new_warn = warn(warningname=name, warningtime=t, savepath= f'yolov5/warning/{name}-{t}.mp4')
+    new_warn.save()
 
     start_time = time.time()
     while True:
@@ -67,42 +75,44 @@ def save(cam, name):
             break
     out.release()
 
+
 def save_video_thread(cam, name):
     global thread_save
     thread_save = True
     save(cam, name)
     thread_save = False
 
+
 def generate_frames(
-    weights=ROOT / "yolov5s.pt",  # model path or triton URL
-    source=ROOT / "data/images",  # file/dir/URL/glob/screen/0(webcam)
-    data=ROOT / "data/coco128.yaml",  # fire.yaml path
-    imgsz=(640, 640),  # inference size (height, width)
-    conf_thres=0.25,  # confidence threshold
-    iou_thres=0.45,  # NMS IOU threshold
-    max_det=1000,  # maximum detections per image
-    device="",  # cuda device, i.e. 0 or 0,1,2,3 or cpu
-    view_img=False,  # show results
-    save_txt=False,  # save results to *.txt
-    save_csv=False,  # save results in CSV format
-    save_conf=False,  # save confidences in --save-txt labels
-    save_crop=False,  # save cropped prediction boxes
-    nosave=False,  # do not save images/videos
-    classes=None,  # filter by class: --class 0, or --class 0 2 3
-    agnostic_nms=False,  # class-agnostic NMS
-    augment=False,  # augmented inference
-    visualize=False,  # visualize features
-    update=False,  # update all models
-    project=ROOT / "runs/detect",  # save results to project/name
-    name="exp",  # save results to project/name
-    exist_ok=False,  # existing project/name ok, do not increment
-    line_thickness=3,  # bounding box thickness (pixels)
-    hide_labels=False,  # hide labels
-    hide_conf=False,  # hide confidences
-    half=False,  # use FP16 half-precision inference
-    dnn=False,  # use OpenCV DNN for ONNX inference
-    vid_stride=1,  # video frame-rate stride
-    person_num=[0],# 视频中人数
+        weights=ROOT / "yolov5s.pt",  # model path or triton URL
+        source=ROOT / "data/images",  # file/dir/URL/glob/screen/0(webcam)
+        data=ROOT / "data/coco128.yaml",  # fire.yaml path
+        imgsz=(640, 640),  # inference size (height, width)
+        conf_thres=0.25,  # confidence threshold
+        iou_thres=0.45,  # NMS IOU threshold
+        max_det=1000,  # maximum detections per image
+        device="",  # cuda device, i.e. 0 or 0,1,2,3 or cpu
+        view_img=False,  # show results
+        save_txt=False,  # save results to *.txt
+        save_csv=False,  # save results in CSV format
+        save_conf=False,  # save confidences in --save-txt labels
+        save_crop=False,  # save cropped prediction boxes
+        nosave=False,  # do not save images/videos
+        classes=None,  # filter by class: --class 0, or --class 0 2 3
+        agnostic_nms=False,  # class-agnostic NMS
+        augment=False,  # augmented inference
+        visualize=False,  # visualize features
+        update=False,  # update all models
+        project=ROOT / "runs/detect",  # save results to project/name
+        name="exp",  # save results to project/name
+        exist_ok=False,  # existing project/name ok, do not increment
+        line_thickness=3,  # bounding box thickness (pixels)
+        hide_labels=False,  # hide labels
+        hide_conf=False,  # hide confidences
+        half=False,  # use FP16 half-precision inference
+        dnn=False,  # use OpenCV DNN for ONNX inference
+        vid_stride=1,  # video frame-rate stride
+        person_num=[0],  # 视频中人数
 ):
     number = 0
     source = str(source)
@@ -211,34 +221,33 @@ def generate_frames(
                     if names[c] == 'person':
                         person_num += 1
 
-
                     label = names[c] if hide_conf else f"{names[c]}"
                     confidence = float(conf)
                     confidence_str = f"{confidence:.2f}"
 
                     if names[c] == 'knife':
                         cam = cv2.VideoCapture(source)
-                        threading.Thread(target=save_video_thread,args=(cam, names[c])).start()
+                        threading.Thread(target=save_video_thread, args=(cam, names[c])).start()
                         knife_num += 1
-                        if number==0:
-                            number = number+1
-                            sendMessage.send_message() #发现危险物品报警
+                        if number == 0:
+                            number = number + 1
+                            sendMessage.send_message()  # 发现危险物品报警
 
                     if names[c] == 'fire':
                         cam = cv2.VideoCapture(source)
                         threading.Thread(target=save_video_thread, args=(cam, names[c])).start()
                         fire_num += 1
-                        if number==0:
+                        if number == 0:
                             number = number + 1
-                            sendMessage.send_message() # 发现火焰报警
+                            sendMessage.send_message()  # 发现火焰报警
 
                     if names[c] == 'falldown':
                         cam = cv2.VideoCapture(source)
                         threading.Thread(target=save_video_thread, args=(cam, names[c])).start()
                         fall_num += 1
-                        if number==0:
+                        if number == 0:
                             number = number + 1
-                            sendMessage.send_message() # 发现有人摔倒报警
+                            sendMessage.send_message()  # 发现有人摔倒报警
 
                     if save_csv:
                         write_to_csv(p.name, label, confidence_str)
@@ -262,17 +271,17 @@ def generate_frames(
                     cv2.putText(im0, text, (640 - text_size[0] - 10, 50), cv2.FONT_HERSHEY_SIMPLEX, 1,
                                 (0, 255, 0), 2)
                 if knife_num > 0:
-                    text = f'waring! knife: {knife_num}'
+                    text = f'warning! knife: {knife_num}'
                     text_size, _ = cv2.getTextSize(text, cv2.FONT_HERSHEY_SIMPLEX, 1, 2)
                     cv2.putText(im0, text, (640 - text_size[0] - 10, 50), cv2.FONT_HERSHEY_SIMPLEX, 1,
                                 (0, 255, 0), 2)
                 if fire_num > 0:
-                    text = f'waring! fire: {fire_num}'
+                    text = f'warning! fire: {fire_num}'
                     text_size, _ = cv2.getTextSize(text, cv2.FONT_HERSHEY_SIMPLEX, 1, 2)
                     cv2.putText(im0, text, (640 - text_size[0] - 10, 50), cv2.FONT_HERSHEY_SIMPLEX, 1,
                                 (0, 255, 0), 2)
                 if fall_num > 0:
-                    text = f'waring! someone fall: {fall_num}'
+                    text = f'warning! someone fall: {fall_num}'
                     text_size, _ = cv2.getTextSize(text, cv2.FONT_HERSHEY_SIMPLEX, 1, 2)
                     cv2.putText(im0, text, (640 - text_size[0] - 10, 50), cv2.FONT_HERSHEY_SIMPLEX, 1,
                                 (0, 255, 0), 2)
@@ -297,7 +306,7 @@ def detect_object(request):
 
 
 def detect_object_start(request):
-   return render(request, 'detect_object.html')
+    return render(request, 'detect_object.html')
 
 
 def detect_act(request):
@@ -306,7 +315,8 @@ def detect_act(request):
 
 
 def detect_act_start(request):
-   return render(request, 'detect_act.html')
+    return render(request, 'detect_act.html')
+
 
 def detect_knife(request):
     opt = parse_opt("bestknife.pt")
@@ -314,7 +324,8 @@ def detect_knife(request):
 
 
 def detect_knife_start(request):
-   return render(request, 'detect_knife.html')
+    return render(request, 'detect_knife.html')
+
 
 def detect_fire(request):
     opt = parse_opt("bestfire.pt")
@@ -322,30 +333,43 @@ def detect_fire(request):
 
 
 def detect_fire_start(request):
-   return render(request, 'detect_fire.html')
+    return render(request, 'detect_fire.html')
+
 
 def warning(request):
     warning_list = warn.objects.all()
-    return render(request,'warning.html',{'warning_list':warning_list})
+    return render(request, 'warning.html', {'warning_list': warning_list})
+
 
 def delete_warning(request):
     warn_id = request.GET.get('id')  # 根据用户名删除用户
     warn_path = warn.objects.get(id=warn_id).savepath
     warn.objects.filter(id=warn_id).delete()
-    
+
     path = "D:/summerProject2024/video/" + str(warn_path)
+    os.remove(path)
 
     print(path)
     return redirect("/warning")  # 删除之后回到/userinfo/界面
 
-def play_video(request):
+def get_toggle_status(request):
+    if request.method == 'GET':
+        # 从数据库中获取当前的toggle状态
+        warn_id = request.GET.get('id')
+        warning = warn.objects.get(id=warn_id)
+        return HttpResponse(warning.done)
 
-    warn_id = request.GET.get('id')  # 根据用户名删除用户
-    warn_path = warn.objects.get(id=warn_id).savepath
-    warning_list = warn.objects.all()
+def update_toggle_status(request):
+    if request.method == 'POST':
+        warn_id = request.POST.get('id')
+        new_value = request.POST.get('value','0')
 
-    context = {
-        # { 'warning_list': warning_list },
-        { 'video_url': warn_path }
-    }
-    return render(request, 'warning.html', context)
+        if warn_id:
+            warning = warn.objects.get(id=warn_id)
+            warning.done = new_value
+            warning.save()
+            return HttpResponse('OK')
+        else:
+            return HttpResponse(status=400)
+
+
