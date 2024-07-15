@@ -40,7 +40,6 @@ INSTALLED_APPS = [
     'userLogin',
     'modify',
     'regional',
-    'testHTML',
     'faceRecog',
     'captcha',
     'yolov5'

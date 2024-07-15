@@ -231,16 +231,22 @@
         <!-- Begin Page Content -->
         <div class="container-fluid">
             <!-- Topbar Search -->
+
         <div class="card-header py-3">
-          <form class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search" method="post" action="{% url 'show_face_search' %}">
-            <div class="input-group">
-              <input type="text" class="mr-2 d-none d-lg-inline text-gray-600 small" placeholder="输入用户名查询" aria-label="Search" aria-describedby="basic-addon2" name="username">
-              <div class="input-group-append">
-                <input type="submit" value="搜索">
-              </div>
+    <form class="form-inline" method="post" action="{% url 'show_face_search' %}">
+        <div class="input-group">
+            <input type="text" class="form-control form-control-sm" placeholder="输入用户名查询" aria-label="Search" aria-describedby="basic-addon2" name="username">
+            <div class="input-group-append">
+                <button class="btn btn-sm btn-primary" type="submit">搜索</button>
             </div>
-          </form>
         </div>
+    </form>
+</div>
+
+
+
+
+
         <ul>
             {% for face in face_list %}
             <div class="card shadow mb-4">

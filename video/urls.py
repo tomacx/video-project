@@ -27,7 +27,6 @@ urlpatterns = [
     path('', include('userLogin.urls')),
     path('', include('modify.urls')),
     path('', include('regional.urls')),
-    path('', include('testHTML.urls')),
     path('', include('faceRecog.urls')),
     path('', include('yolov5.urls')),
     path('captcha/', include('captcha.urls')),

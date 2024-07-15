@@ -12,7 +12,7 @@ from userLogin.models import User
 # Create your views here.
 from django.shortcuts import render,HttpResponse,redirect
 
-from userLogin.views import check_token
+# from userLogin.views import check_token
 
 
 def take_md5(content):
@@ -22,9 +22,9 @@ def take_md5(content):
     result = hash.hexdigest()  #得到加密结果
     return result[:16]
 def userinfo(request):
-    token = request.session['TOKEN']
-    print(token)
-    if check_token(token):
+    # token = request.session['TOKEN']
+    # print(token)
+    # if check_token(token):
         username = request.POST.get('username', '')
         print(username)
         if len(username) == 0:
@@ -34,7 +34,7 @@ def userinfo(request):
 
         return render(request, "userinfo.html", {"user_list": user_list})##将数据导入html模板中，进行数据渲染。
 
-    return HttpResponseRedirect('/login')
+        # return HttpResponseRedirect('/login')
 
 def userinfo_worker(request):
     username = request.session['USERNAME']
@@ -94,11 +94,10 @@ def edit_worker(request):
     password = take_md5(password)
     phone = request.POST.get('phone')
     email = request.POST.get('email')
-    type = request.POST.get('type')
-    modify.models.User.objects.filter(username=username).update(password=password, phone=phone, email=email, type=type)
-    userLogin.models.User.objects.filter(username=username).update(password=password, phone=phone, email=email,
-                                                                   type=type)
-    return render(request, "login.html", {"user_data": user_data})
+    modify.models.User.objects.filter(username=username).update(password=password, phone=phone, email=email)
+    userLogin.models.User.objects.filter(username=username).update(password=password, phone=phone, email=email
+                                                                )
+    return redirect("/login")
 
 
 def index(request):

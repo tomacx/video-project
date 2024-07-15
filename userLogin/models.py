@@ -14,3 +14,8 @@ class warn(models.Model):
     warningtime = models.CharField(max_length=50)
     savepath = models.ImageField(upload_to='D:/summerProject2024/video/yolov5/warning')
     done = models.IntegerField(default=0)
+
+class peopleFlow(models.Model):
+    day = models.DateField()
+    time = models.TimeField()
+    count = models.IntegerField(default='0')

@@ -5,11 +5,12 @@ import json
 
 from captcha.helpers import captcha_image_url
 from captcha.models import CaptchaStore
+from django.core.paginator import Paginator
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 
 import modify
-from userLogin.models import User
+from userLogin.models import User, warn
 import hashlib
 from django.template import RequestContext
 from userLogin.form import UserLogin,UserRegister
@@ -201,3 +202,13 @@ def register(request):
 
 def index(request):
     return render(request,'index.html')
+
+def my_view(request):
+    warning_list = warn.objects.all() # 获取警告列表
+    paginator = Paginator(warning_list, 10)  # 每页10项
+    page_number = request.GET.get('page', 1)
+    page_obj = paginator.get_page(page_number)
+    context = {
+        'page_obj': page_obj,
+    }
+    return render(request, 'warning.html', context)

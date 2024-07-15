@@ -70,6 +70,9 @@ def save(cam, name):
         if ret:
             out.write(frame)
             if time.time() - start_time > duration:
+                global thread_save
+                thread_save = False
+                print("finish save")
                 break
         else:
             break
@@ -77,10 +80,7 @@ def save(cam, name):
 
 
 def save_video_thread(cam, name):
-    global thread_save
-    thread_save = True
     save(cam, name)
-    thread_save = False
 
 
 def generate_frames(
@@ -225,25 +225,33 @@ def generate_frames(
                     confidence = float(conf)
                     confidence_str = f"{confidence:.2f}"
 
-                    if names[c] == 'knife':
+                    global thread_save
+                    if names[c] == 'knife' and confidence >= 0.40:
                         cam = cv2.VideoCapture(source)
-                        threading.Thread(target=save_video_thread, args=(cam, names[c])).start()
+
+                        if not thread_save:
+                            thread_save = True
+                            threading.Thread(target=save_video_thread, args=(cam, names[c])).start()
                         knife_num += 1
                         if number == 0:
                             number = number + 1
                             sendMessage.send_message()  # 发现危险物品报警
 
-                    if names[c] == 'fire':
+                    if names[c] == 'fire'  and confidence >= 0.40:
                         cam = cv2.VideoCapture(source)
-                        threading.Thread(target=save_video_thread, args=(cam, names[c])).start()
+                        if not thread_save:
+                            thread_save = True
+                            threading.Thread(target=save_video_thread, args=(cam, names[c])).start()
                         fire_num += 1
                         if number == 0:
                             number = number + 1
                             sendMessage.send_message()  # 发现火焰报警
 
-                    if names[c] == 'falldown':
+                    if names[c] == 'falldown'  and confidence >= 0.40:
                         cam = cv2.VideoCapture(source)
-                        threading.Thread(target=save_video_thread, args=(cam, names[c])).start()
+                        if not thread_save:
+                            thread_save = True
+                            threading.Thread(target=save_video_thread, args=(cam, names[c])).start()
                         fall_num += 1
                         if number == 0:
                             number = number + 1

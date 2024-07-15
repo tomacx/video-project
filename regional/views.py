@@ -18,9 +18,11 @@ from django.http import StreamingHttpResponse, HttpResponse, JsonResponse, HttpR
 import sys
 import cv2
 import json
+
+import sendMessage
 from regional import detect
 from regional.detect import parse_opt
-from yolov5.views import save_video_thread
+from userLogin.models import warn
 
 FILE = Path(__file__).resolve()
 ROOT = FILE.parents[0]  # YOLOv5 root directory
@@ -51,16 +53,51 @@ from regional.utils.general import (
 from regional.utils.torch_utils import select_device, smart_inference_mode
 
 thread_save = False
+generate_frames_active = True
+person_num_now = 0
 
 global number
 global times
 # Create your views here.
+
+def save(cam, name):
+    print("in save")
+    frame_width = int(cam.get(3))
+    frame_height = int(cam.get(4))
+
+    duration = 10
+    t = time.strftime('%Y-%m-%d_%H-%M-%S', time.localtime())
+    print(t)
+    print(f'yolov5/warning/{name}-{t}.mp4')
+
+    #设置编码器的格式为 H264-MPEG-4 AVC
+    fourcc = cv2.VideoWriter_fourcc(*'avc1')
+    out = cv2.VideoWriter(f'yolov5/warning/{name}-{t}.mp4', fourcc, 10, (frame_width, frame_height))
+    new_warn = warn(warningname=name, warningtime=t, savepath= f'yolov5/warning/{name}-{t}.mp4')
+    new_warn.save()
+
+    start_time = time.time()
+    while True:
+        ret, frame = cam.read()
+        if ret:
+            out.write(frame)
+            if time.time() - start_time > duration:
+                global thread_save
+                thread_save = False
+                print("finish save")
+                break
+        else:
+            break
+
+
+def save_video_thread(cam, name):
+    save(cam, name)
 def regional(request):
 
     return render(request, 'regional.html')
 
 def video_feed(request):
-    cap = cv2.VideoCapture("rtmp://116.62.245.164:1935/live")
+    cap = cv2.VideoCapture("rtmp://116.62.245.164:1935/live/2")
     return StreamingHttpResponse(generate_frames1(cap), content_type='multipart/x-mixed-replace; boundary=frame')
 
 def video_feed2(request):
@@ -69,13 +106,32 @@ def video_feed2(request):
 
 
 def generate_frames1(cap):
-    while True:
+    global generate_frames_active
+    global person_num_now
+
+    while generate_frames_active:
         ret, frame = cap.read()
         if not ret:
             break
         _, jpeg = cv2.imencode('.jpeg', frame)
         yield (b'--frame\r\n'
-                    b'Content-Type: image/jpeg\r\n\r\n' + jpeg.tobytes() + b'\r\n\r\n')
+               b'Content-Type: image/jpeg\r\n\r\n' + jpeg.tobytes() + b'\r\n\r\n')
+
+    while True:
+        ret, frame = cap.read()
+
+        text = f'person: {person_num_now}'
+        text_size, _ = cv2.getTextSize(text, cv2.FONT_HERSHEY_SIMPLEX, 1, 2)
+        cv2.putText(frame, text, (640 - text_size[0] - 10, 50), cv2.FONT_HERSHEY_SIMPLEX, 1,
+                    (0, 0, 255), 2)
+        if not ret:
+            break
+        _, jpeg = cv2.imencode('.jpeg', frame)
+        yield (b'--frame\r\n'
+               b'Content-Type: image/jpeg\r\n\r\n' + jpeg.tobytes() + b'\r\n\r\n')
+
+
+
 
 
 def generate_frames(
@@ -170,7 +226,7 @@ def generate_frames(
                 mask = cv2.fillPoly(mask,[pts],(255,255,255))
                 imgc = im[b].transpose((1, 2, 0))
                 imgc = cv2.add(imgc, np.zeros(np.shape(imgc), dtype=np.uint8), mask=mask)
-                cv2.imshow('1',imgc)
+                #cv2.imshow('1',imgc) 展示蒙版的图片
                 im[b] = imgc.transpose((2, 0, 1))
 
         else:
@@ -247,12 +303,13 @@ def generate_frames(
             if len(det):
                 # Rescale boxes from img_size to im0 size
                 det[:, :4] = scale_boxes(im.shape[2:], det[:, :4], im0.shape).round()
-                person_num = 0
+                global person_num_now
+                person_num_now = 0
                 # Write results
                 for *xyxy, conf, cls in reversed(det):
                     c = int(cls)  # integer class
                     if names[c] == 'person':
-                        person_num += 1
+                        person_num_now += 1
                         print(time.localtime)
 
                     label = names[c] if hide_conf else f"{names[c]}"
@@ -276,14 +333,22 @@ def generate_frames(
                     if save_crop:
                         save_one_box(xyxy, imc, file=save_dir / "crops" / names[c] / f"{p.stem}.jpg", BGR=True)
 
-                text = f'person: {person_num}'
+                text = f'person: {person_num_now}'
                 text_size, _ = cv2.getTextSize(text, cv2.FONT_HERSHEY_SIMPLEX, 1, 2)
                 cv2.putText(im0, text, (640 - text_size[0] - 10, 50), cv2.FONT_HERSHEY_SIMPLEX, 1,
-                            (0, 255, 0), 2)
-                print(person_num)
-                if person_num > 0:
+                            (0, 0, 255), 2)
+                print(person_num_now)
+
+                # cv2.imshow('1', im0)
+                if person_num_now > 0 and names[c] == 'person':
                     cam = cv2.VideoCapture(source)
-                    threading.Thread(target=save_video_thread, args=(cam, names[c])).start()
+                    global thread_save
+                    if not thread_save:
+                        thread_save = True
+                        threading.Thread(target=save_video_thread, args=(cam, names[c])).start()
+                    if number == 0:
+                        number = number + 1
+                        sendMessage.send_message()  # 发现有人摔倒报警
 
             # Stream results
             im0 = annotator.result()
@@ -299,6 +364,7 @@ def generate_frames(
 
 
 def handle_points(request):
+    global generate_frames_active
 
     try:
         data_list = json.loads(request.body)
@@ -312,13 +378,16 @@ def handle_points(request):
 
         opt = parse_opt(points)
 
-        current_video_stream = cv2.VideoCapture("rtmp://116.62.245.164:1935/live")
-        return StreamingHttpResponse(generate_frames(**vars(opt)),  content_type='multipart/x-mixed-replace; boundary=frame')
+        current_video_stream = cv2.VideoCapture("rtmp://116.62.245.164:1935/live/2")
+        responce = StreamingHttpResponse(generate_frames(**vars(opt)),  content_type='multipart/x-mixed-replace; boundary=frame')
+        generate_frames_active = False
+
+        return responce
         #return StreamingHttpResponse(generate_frames1(current_video_stream),
         #                         content_type='multipart/x-mixed-replace; boundary=frame')
     except json.JSONDecodeError as e:
 
-        current_video_stream = cv2.VideoCapture("rtmp://116.62.245.164:1935/live/1")
+        current_video_stream = cv2.VideoCapture("rtmp://116.62.245.164:1935/live/2")
 
         return StreamingHttpResponse(generate_frames1(current_video_stream),
                                              content_type='multipart/x-mixed-replace; boundary=frame')

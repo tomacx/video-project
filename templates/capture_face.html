@@ -25,7 +25,7 @@
     <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
 
       <!-- Sidebar - Brand -->
-      <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index">
+      <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
         <div class="sidebar-brand-icon rotate-n-15">
           <i class="fas fa-laugh-wink"></i>
         </div>
@@ -37,7 +37,7 @@
 
       <!-- Nav Item - Dashboard -->
       <li class="nav-item active">
-        <a class="nav-link" href="index">
+        <a class="nav-link" href="index.html">
           <i class="fas fa-fw fa-tachometer-alt"></i>
           <span>首页</span></a>
       </li>
@@ -94,8 +94,6 @@
               <a class="collapse-item" href="detect_act_start">异常行为监测</a>
               <a class="collapse-item" href="detect_knife_start">物品监测</a>
               <a class="collapse-item" href="detect_fire_start">火灾监测</a>
-              <a class="collapse-item" href="http://172.20.10.13:8080/">多摄像头追踪</a>
-              <a class="collapse-item" href="warning">告警中心</a>
           </div>
         </div>
       </li>
@@ -236,17 +234,23 @@
 
     <div class="container-fluid">
     <h1>人脸录入</h1>
-    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <br>
+    <div class="d-lg-block align-items-center justify-content-between mb-4 " style="width: 50%;">
     <form onsubmit="updateImage(); return false;">
-        <label for="username">用户名：</label>
-        <input type="text" id="username" name="username">
+        <div class="form-group">
+            <input type="text" class="form-control form-control-user" id="username" name="username" placeholder="用户名">
+        </div>
         <hr>
-        <button type="submit" class="btn btn-primary btn-icon-split">上传用户名</button>
+            <div style="display: flex; justify-content: left;">
+                <button type="submit" class="btn btn-primary ">上传用户名</button>
+            </div>
         </form>
     </div>
-        <form method="post" action="{%url 'take_photo' %}">
-            <button id="submitButton" type="submit" class="btn btn-primary btn-icon-split">录入人脸</button>
+    <div style="display: flex" > <!-- Flexbox 容器 -->
+        <form method="post" action="{% url 'take_photo' %}">
+            <button id="submitButton" type="submit" class="btn btn-primary ">录入人脸</button>
         </form>
+    </div>
 </div>
     <script>
 

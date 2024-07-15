@@ -25,8 +25,8 @@
         }
         #imageCanvas {
             position: absolute;
-            top: 194px;
-            left: 232px;
+            top: 143px;
+            left: 233px;
         }
     </style>
 </head>
@@ -91,11 +91,11 @@
             <h6 class="collapse-header">选项</h6>
             <a class="collapse-item" href="capture_face_start">人脸录入</a>
             <a class="collapse-item" href="recognize_face_start">人脸识别</a>
-            
+
           </div>
         </div>
       </li>
-        
+
       <li class="nav-item">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePages" aria-expanded="true" aria-controls="collapsePages">
           <i class="fas fa-fw fa-folder"></i>
@@ -113,25 +113,25 @@
               <a class="collapse-item" href="warning">告警中心</a>
           </div>
         </div>
-      </li>  
-        
+      </li>
+
       <!-- Divider -->
       <hr class="sidebar-divider">
 
       <!-- Heading -->
-      
+
 
       <!-- Nav Item - Pages Collapse Menu -->
-        
+
         <!-- 上面那段拿来借用啦~>
       <！-- Nav Item - Charts -->
-      
+
 
       <!-- Nav Item - Tables -->
-     
+
 
       <!-- Divider -->
-      
+
 
       <!-- Sidebar Toggler (Sidebar) -->
       <div class="text-center d-none d-md-inline">
@@ -241,19 +241,24 @@
 
         <!-- Begin Page Content -->
         <div class="container-fluid">
+    <!-- Page Heading -->
+    <h1 class="h3 mb-4 text-gray-800">区域监测</h1>
+    <img id="videofeed" src="{%  url 'video_feed' %}">
+    <canvas id="imageCanvas" width="640" height="480"></canvas>
 
-          <!-- Page Heading -->
-          <h1 class="h3 mb-4 text-gray-800">区域监测</h1>
-            <img id="videofeed" src="{%  url 'video_feed' %}">
-            <canvas id="imageCanvas" width="640" height="480"></canvas>
-            
-            <input id="submitButton" type="submit" value="提交">
-
-            <input id="clearButton" type="submit" value="清空">
+    <div class="row">
+        <div class="col-md-6">
+            <button class="btn btn-primary" type="submit" id="submitButton">提交</button>
         </div>
+        <div class="col-md-6">
+            <button class="btn btn-danger" type="submit" id="clearButton">清空</button>
+        </div>
+    </div>
+</div>
+
         <!-- /.container-fluid -->
-     
-          
+
+
           <script>
         document.addEventListener('DOMContentLoaded', function() {
 
@@ -314,7 +319,7 @@
                 }
 
             });
-            
+
             function sendPoints(points){
                 //用AJAX发送数据到后端
                 var xhr = new XMLHttpRequest();
@@ -325,7 +330,6 @@
                     if (xhr.readyState === XMLHttpRequest.DONE) {
                         if (xhr.status === 200) {
                             console.log('Data sent successfully');
-                           
                             // 可以处理后端返回的响应数据
                         } else {
                             console.error('Error sending data to backend');

@@ -1,4 +1,5 @@
 import json
+import threading
 from urllib import response
 
 import pickle
@@ -14,11 +15,16 @@ import tensorflow as tf
 from django.http import HttpResponse, StreamingHttpResponse
 from django.shortcuts import render
 
+import sendMessage
 from faceRecog.features_extraction_to_csv import features_to_csv
 from faceRecog.models import Face
+from userLogin.models import warn
+
+thread_save = False
 
 global Face_Register_con
-
+global COUNT
+global COUNT2
 # 要读取人脸图像文件的路径 / Path of cropped faces
 path_images_from_camera = "faceRecog/data/data_faces_from_camera/"
 # Dlib 正向人脸检测器 / Use frontal face detector of Dlib
@@ -29,10 +35,35 @@ predictor = dlib.shape_predictor('faceRecog/data/data_dlib/shape_predictor_68_fa
 
 # Dlib Resnet 人脸识别模型, 提取 128D 的特征矢量 / Use Dlib resnet50 model to get 128D face descriptor
 face_reco_model = dlib.face_recognition_model_v1("faceRecog/data/data_dlib/dlib_face_recognition_resnet_model_v1.dat")
+def save(cam, name):
+    frame_width = int(cam.get(3))
+    frame_height = int(cam.get(4))
 
-# def face(request):
-#     return render(request, 'face.html')
-#
+    duration = 10
+    t = time.strftime('%Y-%m-%d_%H-%M-%S', time.localtime())
+
+    #设置编码器的格式为 H264-MPEG-4 AVC
+    fourcc = cv2.VideoWriter_fourcc(*'avc1')
+    out = cv2.VideoWriter(f'yolov5/warning/{name}-{t}.mp4', fourcc, 10, (frame_width, frame_height))
+    new_warn = warn(warningname=name, warningtime=t, savepath= f'yolov5/warning/{name}-{t}.mp4')
+    new_warn.save()
+
+    start_time = time.time()
+    while True:
+        ret, frame = cam.read()
+        if ret:
+            out.write(frame)
+            if time.time() - start_time > duration:
+                global thread_save
+                thread_save = False
+                print("finish save")
+                break
+        else:
+            break
+
+
+def save_video_thread(cam, name):
+    save(cam, name)
 def capture_face_start(request):
         return render(request, 'capture_face.html')
 
@@ -154,6 +185,7 @@ class Face_Register:
 
     # 获取人脸 / Main process of face detection and saving
     def process(self, stream):
+
         # 1. 新建储存人脸图像文件目录 / Create folders to save photos
         self.pre_work_mkdir()
 
@@ -375,6 +407,9 @@ class Face_Recognizer:
 
     # 处理获取的视频流, 进行人脸识别 / Face detection and recognition wit OT from input video stream
     def process(self, stream):
+        COUNT = 0
+        COUNT2 = 0
+        global thread_save
         # 1. 读取存放所有人脸特征的 csv / Get faces known from "features.all.csv"
         if not self.get_face_database():
             print("Error: Cannot get faces from database")
@@ -413,6 +448,15 @@ class Face_Recognizer:
                 if "unknown" in self.current_frame_face_name_list:
                     logging.debug("  有未知人脸, 开始进行 reclassify_interval_cnt 计数")
                     self.reclassify_interval_cnt += 1
+                    #
+                    # if not thread_save:
+                    #     cam = cv2.VideoCapture(0)
+                    #     thread_save = True
+                    #     threading.Thread(target=save_video_thread, args=(cam, 'unkown')).start()
+
+                    if COUNT == 0:
+                        sendMessage.send_message()
+                        COUNT = COUNT + 1
 
                 if self.current_frame_face_cnt != 0:
                     for k, d in enumerate(faces):
@@ -518,6 +562,16 @@ class Face_Recognizer:
                 j = np.argmax(preds)
                 label_name = le.classes_[j]  # get label of predicted class
                 label = f'{label_name}: {preds[j]:.4f}'
+                if label_name == 'fake':
+                    #
+                    # if not thread_save:
+                    #     cam = cv2.VideoCapture(0)
+                    #     thread_save = True
+                    #     threading.Thread(target=save_video_thread, args=(cam, 'fake')).start()
+
+                    if COUNT2 == 0:
+                        sendMessage.send_message()
+                        COUNT2 = COUNT2 + 1
                 cv2.putText(img_rd, label, (d.left(), d.top() - 10),cv2.FONT_HERSHEY_COMPLEX, 0.7, (0, 0, 255), 2)
 
             self.update_fps()
@@ -536,11 +590,11 @@ def recognize_face_start_worker(request):
 def recognize_face(request):
     logging.basicConfig(level=logging.INFO)
     Face_Recognizer_con = Face_Recognizer()
-    rtmpUrl = 'rtmp://116.62.245.164:1935/live/2'
+    # rtmpUrl = 'rtmp://116.62.245.164:1935/live'
     # cap = cv2.VideoCapture(rtmpUrl)
     cap = cv2.VideoCapture(0)
-    if not cap.isOpened():
-        print("Error: Failed to open RTMP stream: " + rtmpUrl)
+    # if not cap.isOpened():
+    #     print("Error: Failed to open RTMP stream: " + rtmpUrl)
 
     Face_Recognizer_con.process(cap)
 
