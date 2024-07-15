@@ -111,3 +111,6 @@ new分支下为我们的项目
 > [!note]
 >
 > **mcmot**的安装环境参考文件目录下的requirements.txt文件
+> [!important]
+>
+> big_screen通过python app.py 启动
