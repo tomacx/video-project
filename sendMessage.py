@@ -12,10 +12,10 @@ PRODUCT_NAME = "Dysmsapi"
 DOMAIN = "dysmsapi.aliyuncs.com"
 
 # 注意：更改为自己的参数，参数从上面的教程找
-sign_name = "system"  # 短信签名
-template_code = "SMS_468955057"  # 模板CODE
-ACCESS_KEY_ID = "LTAI5t96Pim1FJvJcLYmiiJK"  # ACCESS_KEY_ID
-ACCESS_KEY_SECRET = "fIgxY5WCNEqgqG9rtAfiA73CkI0QTv"  # ACCESS_KEY_ID
+sign_name = "signal"  # 短信签名
+template_code = "code"  # 模板CODE
+ACCESS_KEY_ID = "ACCESS_KEY_ID"  # ACCESS_KEY_ID
+ACCESS_KEY_SECRET = "ACCESS_SCERET_KEY_ID"  # ACCESS_KEY_ID
 
 acs_client = AcsClient(ACCESS_KEY_ID, ACCESS_KEY_SECRET, REGION)
 region_provider.add_endpoint(PRODUCT_NAME, REGION, DOMAIN)
