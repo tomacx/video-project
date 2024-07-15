@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>mc-mot</title>
+</head>
+<body>
+    <h1>Multi-Camera Multi-Object Tracking</h1>
+    <button id="loadButton">Loading...</button>
+    <div id="imageContainer">
+
+    </div>
+
+    <script>
+        const loadButton = document.getElementById('loadButton');
+        const imageContainer = document.getElementById('imageContainer');
+
+        loadButton.addEventListener('click', function() {
+            // 发送 POST 请求
+            fetch('/track_init', {
+                method: 'GET',
+            })
+            .then(response => response.json())
+            .then(data => {
+                // 创建新的图片元素
+                const imageElement = document.createElement('img');
+                imageElement.src = '{% url 'mc_mot_track' %}';
+                imageElement.alt = 'video source';
+
+                // 清空图片容器并添加新的图片
+                imageContainer.innerHTML = '';
+                imageContainer.appendChild(imageElement);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+    </script>
+    
+</body>
+</html>
